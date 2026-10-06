@@ -181,7 +181,7 @@ def parse_card(raw: dict) -> dict:
             if not out['phone']:
                 out['phone'] = t
             continue
-        if STATUS_RE.match(t) or t.startswith('·'):
+        if STATUS_RE.match(t) or t.startswith('·') or t.startswith('₦'):    # status, separator, price range
             continue
         rest.append(t)
     if rest:

@@ -28,7 +28,7 @@ sources:
       - { center: [6.5030, 3.3620], zoom: 14 }   # Yaba, Surulere
   osm:           { enabled: true }
   directories:   { enabled: true, sites: [finelib, businesslist] }   # cybo: 403 to automated requests
-  site_contacts: { enabled: true, max_sites: 800 }
+  site_contacts: { enabled: true, max_sites: 800, concurrency: 10 }
 
 enrich:
   place_pages: { enabled: true, max_place_visits: 500, order_by: reviews_desc }

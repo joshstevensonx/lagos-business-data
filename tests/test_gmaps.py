@@ -152,3 +152,8 @@ def test_splits_skip_quadrants_outside_the_catchment():
     ne_bbox = (6.570, 3.390, 6.580, 3.400)                   # only the north-east quadrant reaches it
     kids = child_searches(s, ne_bbox)
     assert [k.area for k in kids] == ['sweep 6.5695,3.3868,16z']
+
+
+def test_price_range_is_not_a_category():
+    f = parse_card({'aria': 'Mama Put', 'leaves': ['Mama Put', '4.1', '(9)', '₦1–10,000', '·', 'Restaurant', '·', '3 Fixture St']})
+    assert (f['label'], f['addr']) == ('Restaurant', '3 Fixture St')

@@ -63,6 +63,8 @@ def _merge_into(hit: Business, r: Business):
                 loser, loser_src, kept = rv, r.source, hv
             if f not in NO_CONFLICT:
                 hit.conflicts.append({'field': f, 'kept': kept, 'dropped': loser, 'dropped_source': loser_src})
+    if hit.sub == 'Unclassified (needs review)' and r.sub and r.sub != 'Unclassified (needs review)':
+        hit.group, hit.sub = r.group, r.sub
     if r_wins:
         # the more trusted record leads provenance (used for later conflict calls)
         hit.sources_all = [r.source] + [s for s in hit.sources_all if s != r.source]

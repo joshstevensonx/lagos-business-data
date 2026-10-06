@@ -87,3 +87,12 @@ def test_different_place_ids_are_never_fused_by_name():
     c = B(name='Nett Pharmacy', source='OpenStreetMap (Oct 2026)', phone='+2348031234567')
     kept, dec = dedupe([a, b, c])
     assert len(kept) == 2 and kept[0].phone == '+2348031234567'
+
+
+def test_merge_inherits_classification_when_kept_record_is_unclassified():
+    a = B(name='Fixture Hub', phone='+2348031234567', source='BusinessList.com.ng (Oct 2026)')
+    a.group, a.sub = 'Other Local Services', 'Unclassified (needs review)'
+    b = B(name='Fixture Hub', phone='+2348031234567')
+    b.group, b.sub = 'Phones & Technology', 'Phone Shops'
+    kept, _ = dedupe([a, b])
+    assert (kept[0].group, kept[0].sub) == ('Phones & Technology', 'Phone Shops')

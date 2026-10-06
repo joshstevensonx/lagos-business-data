@@ -66,3 +66,19 @@ def test_order_link_alone_is_not_the_google_delivery_flag():
     PP.apply(b, p, set())
     total, c, _ = S.score(S.apify_view(b), {})
     assert c['Google Delivery flag'] == 0 and c['Online ordering / menu'] == 7
+
+
+def test_place_page_results_persist_across_rebuilds(magazine_run, monkeypatch):
+    magazine_run.cfg.enrich.place_pages.enabled = True
+    maps = 'https://www.google.com/maps/place/x/data=!4m7!3m6!1s0x10:0xab!8m2!3d6.5!4d3.3'
+    calls = []
+
+    async def fake_visit(run, targets, exe, conc, delay):
+        calls.append(len(targets))
+        return {id(b): PP.parse_place({'items': {'action:4': {'href': 'https://glovo.example', 'label': ''}}}, [])
+                for b in targets}
+    monkeypatch.setattr(PP, '_visit_all', fake_visit)
+    recs = PP.enrich(magazine_run, [Business(name='A', maps=maps, reviews=50)])
+    assert recs[0].score_basis == S.BASIS_FULL
+    again = PP.enrich(magazine_run, [Business(name='A', maps=maps, reviews=50)])   # rebuilt record
+    assert again[0].score_basis == S.BASIS_FULL and calls == [1]                   # applied from cache, no visit
