@@ -1,68 +1,69 @@
 {
   "run_id": "2026-10-06-delivery",
   "created_at": "2026-10-06T18:40:53+00:00",
-  "updated_at": "2026-10-06T19:59:27+00:00",
+  "updated_at": "2026-10-06T21:48:19+00:00",
   "pipeline": "delivery",
   "versions": {
     "lagosdata": "0.1.0",
     "python": "3.13.16"
   },
   "discover": {
-    "searched": 172,
-    "skipped_done": 104,
+    "searched": 228,
+    "skipped_done": 276,
     "failed": 0,
-    "raw_rows": 19460,
+    "raw_rows": 25434,
     "sources_not_built": [],
     "aborted": []
   },
   "timings": {
-    "discover": 2306.1,
-    "geo": 3.69,
-    "classify": 5.67,
-    "dedupe": 4.27,
-    "enrich": 1023.53,
-    "score": 1.5,
-    "report": 12.33,
-    "verify": 9.96
+    "discover": 2983.13,
+    "geo": 7.25,
+    "classify": 10.0,
+    "dedupe": 6.99,
+    "enrich": 18.53,
+    "score": 1.59,
+    "report": 13.72,
+    "verify": 13.45
   },
   "geo": {
-    "records": 36995,
+    "records": 62429,
     "Unassigned": 252,
-    "Lekki Phase 1": 2130,
-    "Ikoyi": 2634,
-    "Victoria Island": 1956,
-    "Lekki-Epe Corridor to Ajah": 5130,
-    "Surulere": 3246,
-    "Yaba": 3674,
-    "Outside catchment": 17973
+    "Lekki Phase 1": 3539,
+    "Ikoyi": 3493,
+    "Victoria Island": 2419,
+    "Lekki-Epe Corridor to Ajah": 10634,
+    "Surulere": 4230,
+    "Yaba": 5312,
+    "Outside catchment": 32550
   },
   "classify": {
-    "records": 36995,
-    "unclassified": 1154
+    "records": 62429,
+    "unclassified": 1195
   },
   "dedupe": {
-    "in": 36995,
-    "merged": 23367,
+    "in": 62429,
+    "merged": 47116,
     "poi_dropped": 0,
-    "kept": 13622,
-    "conflicts": 1449
+    "kept": 15298,
+    "conflicts": 2361
   },
   "robots_skips": {
     "site_contacts": [
+      "https://www.ilbagnonigeria.com/",
       "https://api.whatsapp.com/contact",
       "https://api.whatsapp.com/contact-us",
       "https://api.whatsapp.com/about",
       "https://api.whatsapp.com/order",
       "https://api.whatsapp.com/delivery",
-      "https://api.whatsapp.com/contact",
       "https://linktr.ee/big_spoon_catering",
-      "https://api.whatsapp.com/contact-us",
-      "https://api.whatsapp.com/about",
-      "https://api.whatsapp.com/order",
-      "https://api.whatsapp.com/delivery",
       "https://linktr.ee/Adellastaste",
       "https://linktr.ee/BasiliKitchen",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
       "https://linktr.ee/Dvivres",
+      "https://api.whatsapp.com/delivery",
       "https://linktr.ee/oppysfood",
       "https://api.whatsapp.com/contact",
       "https://api.whatsapp.com/contact-us",
@@ -84,30 +85,31 @@
     ]
   },
   "enrich": {
-    "records": 13622,
+    "records": 15298,
     "ran": [
       "site_contacts",
-      "place_pages"
+      "place_pages",
+      "places_api"
     ],
     "not_built": []
   },
   "score": {
-    "records": 13622,
-    "out_of_scope_dropped": 6229,
+    "records": 15298,
+    "out_of_scope_dropped": 6839,
     "bands": {
-      "Hot - approach first": 19,
-      "Warm - worth a call": 289,
-      "Cool - lower priority": 788,
-      "Cold - little evidence of delivery": 6297
+      "Hot - approach first": 20,
+      "Warm - worth a call": 355,
+      "Cool - lower priority": 881,
+      "Cold - little evidence of delivery": 7203
     },
     "basis": {
-      "Full": 291,
-      "Floor - not enriched": 7102
+      "Full": 500,
+      "Floor - not enriched": 7959
     }
   },
   "report": {
     "workbook": "out/2026-10-06-delivery/Lagos_Delivery_Prospects_v2.xlsx",
-    "rows": 7393
+    "rows": 8459
   },
   "verify": {
     "ok": true,

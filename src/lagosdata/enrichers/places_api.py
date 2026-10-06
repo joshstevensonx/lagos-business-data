@@ -31,7 +31,9 @@ FIELD_MASKS = {
 for _sku, _mask in FIELD_MASKS.items():
     assert '*' not in _mask, 'a wildcard field mask bills every call at the top SKU'
 ENDPOINT = 'https://places.googleapis.com/v1/places/{pid}'
-USAGE_FILE = Path(os.environ.get('LAGOSDATA_HOME', Path.home() / '.lagosdata')) / 'places_usage.json'
+# Kept in the repo (committed) by default, NOT in ~ - cloud containers and new sessions start with
+# a fresh home directory, and a lost count is how the free tier gets overspent.
+USAGE_FILE = Path(os.environ.get('LAGOSDATA_HOME', '.lagosdata')) / 'places_usage.json'
 
 
 def api_key() -> str:
@@ -73,47 +75,89 @@ def places_id(maps_url: str) -> str:
     return m.group(1) if m else ''
 
 
-def enrich(run, recs, http=requests, budget: Budget | None = None):
-    cfg = run.cfg.sources.places_api
-    if not cfg.enabled:
-        return recs
-    key = api_key()
-    if not key:
-        run.log.event('skip', 'places_api enabled but GOOGLE_PLACES_API_KEY is not set (env or .env) - skipped')
-        return recs
-    sku = 'enterprise' if 'enterprise' in cfg.skus else cfg.skus[-1]
-    mask = FIELD_MASKS[sku]
-    budget = budget or Budget(cfg.monthly_ceiling_pct)
+def candidates(run, recs, top_n):
     from ..record import OUTSIDE, UNASSIGNED
     # free calls go where they change the most: in-catchment records missing a phone or
     # website first, then by review count (the highest-value businesses)
     cand = [b for b in recs if places_id(b.maps) and b.area not in (OUTSIDE, UNASSIGNED)]
     cand.sort(key=lambda b: (bool(b.phone) and bool(b.website),
                              -(b.reviews if isinstance(b.reviews, int) else -1)))
+    return cand[:top_n]
+
+
+def load_cache(path) -> dict:
+    out = {}
+    if path.exists():
+        for line in path.read_text(encoding='utf-8').splitlines():
+            if line.strip():
+                d = json.loads(line)
+                out[d['key']] = d['data']
+    return out
+
+
+def apply(b, d: dict, used_phones: set):
+    """Fold one Places response into a record. Like the other enrichers, a phone never becomes a
+    record's primary number if another record already uses it (e.g. a chain's hotline)."""
     from ..normalise import clean_phone
-    done = 0
-    for b in cand[:cfg.top_n]:
-        if not budget.take(sku):
-            run.log.event('budget', f'places_api: {sku} ceiling ({budget.ceiling(sku)}/month = '
-                          f'{cfg.monthly_ceiling_pct}% of free) reached - stopping')
-            break
-        r = http.get(ENDPOINT.format(pid=places_id(b.maps)), timeout=15,
-                     headers={'X-Goog-Api-Key': key, 'X-Goog-FieldMask': mask})
-        run.log.event('places_api', '', sku=sku, status=r.status_code, remaining=budget.remaining(sku))
-        if r.status_code != 200:
-            continue
-        d = r.json()
-        phone = clean_phone(d.get('internationalPhoneNumber') or d.get('nationalPhoneNumber') or '')
-        if phone and not b.phone:
+    phone = clean_phone(d.get('internationalPhoneNumber') or d.get('nationalPhoneNumber') or '')
+    if phone:
+        if not b.phone and phone not in used_phones:
             b.phone = phone
-        if d.get('websiteUri') and not b.website:
-            b.website = d['websiteUri']
-        if d.get('userRatingCount') is not None:
-            b.reviews = int(d['userRatingCount'])
-        if d.get('rating') is not None and b.rating == '':
-            b.rating = float(d['rating'])
-        if 'Places API' not in ' '.join(b.sources_all):
-            b.sources_all.append(f'Google Places API ({date.today().strftime("%b %Y")})')
-        done += 1
-    run.log.event('stage', f'places_api: {done} records enriched; {budget.remaining(sku)} {sku} calls left this month')
+            used_phones.add(phone)
+        b.phones_all = '; '.join(dict.fromkeys([p for p in [b.phone] + b.phones_all.split('; ') + [phone] if p]))
+    if d.get('websiteUri') and not b.website:
+        b.website = d['websiteUri']
+    if d.get('userRatingCount') is not None:
+        b.reviews = int(d['userRatingCount'])
+    if d.get('rating') is not None and b.rating == '':
+        b.rating = float(d['rating'])
+    if not any('Places API' in s for s in b.sources_all):
+        b.sources_all.append(f'Google Places API ({date.today().strftime("%b %Y")})')
+
+
+def enrich(run, recs, http=requests, budget: Budget | None = None):
+    """Responses are cached in cache/places_api.jsonl, so rebuilding the derived stages never
+    spends a call twice."""
+    cfg = run.cfg.sources.places_api
+    if not cfg.enabled:
+        return recs
+    cache_path = run.dir / 'cache' / 'places_api.jsonl'
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache = load_cache(cache_path)
+    targets = [b for b in candidates(run, recs, cfg.top_n) if places_id(b.maps) not in cache]
+    key = api_key() if targets else ''
+    if targets and not key:
+        run.log.event('skip', 'places_api enabled but GOOGLE_PLACES_API_KEY is not set (env or .env) - '
+                      f'{len(targets)} uncached records not enriched')
+        targets = []
+    sku = 'enterprise' if 'enterprise' in cfg.skus else cfg.skus[-1]
+    mask = FIELD_MASKS[sku]
+    called = 0
+    if targets:
+        budget = budget or Budget(cfg.monthly_ceiling_pct)
+        with open(cache_path, 'a', encoding='utf-8') as fh:
+            for b in targets:
+                if not budget.take(sku):
+                    run.log.event('budget', f'places_api: {sku} ceiling ({budget.ceiling(sku)}/month = '
+                                  f'{cfg.monthly_ceiling_pct}% of free) reached - stopping')
+                    break
+                r = http.get(ENDPOINT.format(pid=places_id(b.maps)), timeout=15,
+                             headers={'X-Goog-Api-Key': key, 'X-Goog-FieldMask': mask})
+                run.log.event('places_api', '', sku=sku, status=r.status_code, remaining=budget.remaining(sku))
+                if r.status_code != 200:
+                    continue
+                d = {k: v for k, v in r.json().items() if k in ('internationalPhoneNumber', 'nationalPhoneNumber',
+                                                              'websiteUri', 'userRatingCount', 'rating')}
+                cache[places_id(b.maps)] = d
+                fh.write(json.dumps({'key': places_id(b.maps), 'name': b.name, 'data': d}, ensure_ascii=False) + '\n')
+                fh.flush()                      # a paid call is never lost to a container restart
+                called += 1
+    used = {b.phone for b in recs if b.phone}
+    applied = 0
+    for b in recs:
+        d = cache.get(places_id(b.maps))
+        if d is not None:
+            apply(b, d, used)
+            applied += 1
+    run.log.event('stage', f'places_api: {applied} records enriched ({called} new calls this run)')
     return recs

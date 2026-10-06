@@ -24,6 +24,7 @@ def delivery_run(tmp_path):
     run = Run.create(cfg, areas, path, run_id='test-delivery', out_dir=str(tmp_path), echo=False)
     run.cfg.sources.site_contacts.enabled = False      # no network in tests
     run.cfg.enrich.place_pages.enabled = False
+    run.cfg.sources.places_api.enabled = False
     recs = [
         Business(name='Fixture Mart Lekki', label='Supermarket', area='Lekki Phase 1', reviews=900, rating=4.4,
                  website='https://mart.example', phone='+2348031234567', score_basis=BASIS_FULL,

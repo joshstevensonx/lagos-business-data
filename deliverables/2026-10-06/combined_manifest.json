@@ -1,0 +1,32 @@
+{
+  "run_id": "2026-10-06-combined",
+  "created_at": "2026-10-06T22:30:24+00:00",
+  "updated_at": "2026-10-06T22:32:49+00:00",
+  "pipeline": "magazine",
+  "versions": {
+    "lagosdata": "0.1.0",
+    "python": "3.13.16"
+  },
+  "combine": {
+    "from": [
+      "2026-10-06-magazine",
+      "2026-10-06-delivery"
+    ],
+    "in": 49839,
+    "merged": 630,
+    "kept": 49209,
+    "inside": 18541
+  },
+  "report": {
+    "workbook": "out/2026-10-06-combined/Lagos_Combined_MASTER_DATABASE.xlsx",
+    "rows": 49209
+  },
+  "timings": {
+    "report": 67.64,
+    "verify": 77.49
+  },
+  "verify": {
+    "ok": true,
+    "failed": []
+  }
+}

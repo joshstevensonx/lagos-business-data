@@ -14,22 +14,22 @@
   {
    "name": "schema",
    "ok": true,
-   "detail": "33902 records OK"
+   "detail": "41380 records OK"
   },
   {
    "name": "unclassified < 5%",
    "ok": true,
-   "detail": "1193/33902 = 3.5%"
+   "detail": "1338/41380 = 3.2%"
   },
   {
    "name": "dedupe sanity",
    "ok": true,
-   "detail": "no duplicate phone or place_id; 6 phone(s) shared by distinct Google places (branches/one owner), kept separate: ['+2349037756555', '+2349065597492', '+2348090165942', '+2348139180996', '+2348035955096']"
+   "detail": "no duplicate phone or place_id; 10 phone(s) shared by distinct Google places (branches/one owner), kept separate: ['+2349088889999', '+2348023364358', '+2349037756555', '+2349065597492', '+2348090165942']"
   },
   {
    "name": "row counts agree across tabs",
    "ok": true,
-   "detail": "{\"master.json\": 33902, \"MASTER DATABASE\": 33902, \"area_summary_total\": 33902, \"group_area_total\": 33902}"
+   "detail": "{\"master.json\": 41380, \"MASTER DATABASE\": 41380, \"area_summary_total\": 41380, \"group_area_total\": 41380}"
   },
   {
    "name": "spot-check sample written",
@@ -38,60 +38,61 @@
   }
  ],
  "summary": {
-  "records": 33902,
+  "records": 41380,
   "by_source_kind": {
-   "gmaps": 30548,
-   "directory": 4108
+   "gmaps": 38166,
+   "directory": 4108,
+   "places_api": 450
   },
   "by_area": {
-   "Outside catchment": 24090,
-   "Gbagada": 2823,
-   "Ojota": 1785,
-   "Ilupeju": 1139,
-   "Maryland / Mende": 1119,
-   "Palmgrove": 1057,
-   "Anthony / Anthony Village": 1000,
-   "Obanikoro": 669,
-   "Unassigned": 220
+   "Outside catchment": 29730,
+   "Gbagada": 3130,
+   "Ojota": 1966,
+   "Maryland / Mende": 1449,
+   "Ilupeju": 1362,
+   "Palmgrove": 1339,
+   "Anthony / Anthony Village": 1318,
+   "Obanikoro": 871,
+   "Unassigned": 215
   },
   "by_group": {
-   "Professional Services": 2800,
-   "Phones & Technology": 2237,
-   "Construction & Building": 2186,
-   "Beauty & Personal Care": 2116,
-   "Fashion & Clothing": 1880,
-   "Automotive": 1824,
-   "Health & Medical": 1788,
-   "Education & Children": 1757,
-   "Insurance & Finance": 1493,
-   "Printing & Business Services": 1342,
-   "Retail & Groceries": 1314,
-   "Other Local Services": 1293,
-   "Food & Restaurants": 1285,
-   "Furniture & Interiors": 1215,
-   "Events & Creative Services": 1099,
-   "Logistics & Delivery": 935,
-   "Religious & Community": 875,
-   "Laundry & Cleaning": 830,
-   "Real Estate & Property": 819,
-   "Bars & Entertainment": 730,
-   "Baking & Desserts": 654,
-   "Home Services": 630,
-   "Fitness & Wellness": 592,
-   "Security": 558,
-   "Power & Energy": 554,
-   "Catering & Events Food": 377,
-   "Hospitality": 339,
-   "Agriculture & Food Supply": 277,
+   "Professional Services": 4777,
+   "Phones & Technology": 2918,
+   "Construction & Building": 2547,
+   "Education & Children": 2288,
+   "Beauty & Personal Care": 2261,
+   "Automotive": 2137,
+   "Health & Medical": 2058,
+   "Fashion & Clothing": 1933,
+   "Insurance & Finance": 1818,
+   "Printing & Business Services": 1713,
+   "Other Local Services": 1444,
+   "Retail & Groceries": 1434,
+   "Food & Restaurants": 1405,
+   "Events & Creative Services": 1373,
+   "Logistics & Delivery": 1342,
+   "Furniture & Interiors": 1333,
+   "Laundry & Cleaning": 1257,
+   "Religious & Community": 1104,
+   "Real Estate & Property": 947,
+   "Bars & Entertainment": 755,
+   "Baking & Desserts": 743,
+   "Home Services": 679,
+   "Fitness & Wellness": 651,
+   "Power & Energy": 630,
+   "Security": 581,
+   "Catering & Events Food": 508,
+   "Hospitality": 351,
+   "Agriculture & Food Supply": 290,
    "Water & Utilities": 103
   },
-  "contactable": 25626,
+  "contactable": 31806,
   "enrichment": {
-   "website": 6081,
-   "email": 300,
-   "whatsapp": 130,
-   "instagram": 294,
-   "facebook": 243
+   "website": 7828,
+   "email": 293,
+   "whatsapp": 139,
+   "instagram": 305,
+   "facebook": 245
   }
  }
 }

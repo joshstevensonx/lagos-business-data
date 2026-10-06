@@ -198,6 +198,7 @@ def enrich(run, recs):
                     cache[_key(b)] = results[id(b)]
                     fh.write(json.dumps({'key': _key(b), 'name': b.name, 'parsed': results[id(b)]},
                                         ensure_ascii=False) + '\n')
+                    fh.flush()
     used = {b.phone for b in recs if b.phone}
     applied = 0
     for b in recs:

@@ -1,0 +1,104 @@
+{
+ "ok": true,
+ "checks": [
+  {
+   "name": "formula errors (LibreOffice recalc)",
+   "ok": true,
+   "detail": "errors_found=0"
+  },
+  {
+   "name": "dashboard KPIs recounted in Python",
+   "ok": true,
+   "detail": "40 KPI rows checked"
+  },
+  {
+   "name": "schema",
+   "ok": true,
+   "detail": "49209 records OK"
+  },
+  {
+   "name": "unclassified < 5%",
+   "ok": true,
+   "detail": "1346/49209 = 2.7%"
+  },
+  {
+   "name": "dedupe sanity",
+   "ok": true,
+   "detail": "no duplicate phone or place_id"
+  },
+  {
+   "name": "row counts agree across tabs",
+   "ok": true,
+   "detail": "{\"master.json\": 49209, \"MASTER DATABASE\": 49209, \"area_summary_total\": 49209, \"group_area_total\": 49209}"
+  },
+  {
+   "name": "spot-check sample written",
+   "ok": true,
+   "detail": "10 records in verify_sample.csv - for a human to check against the listing; NOT verified by this tool"
+  }
+ ],
+ "summary": {
+  "records": 49209,
+  "by_source_kind": {
+   "gmaps": 45790,
+   "directory": 4495,
+   "places_api": 692
+  },
+  "by_area": {
+   "Outside catchment": 30511,
+   "Gbagada": 3190,
+   "Yaba": 2241,
+   "Ojota": 1966,
+   "Maryland / Mende": 1449,
+   "Surulere": 1448,
+   "Palmgrove": 1435,
+   "Ilupeju": 1371,
+   "Lekki-Epe Corridor to Ajah": 1324,
+   "Anthony / Anthony Village": 1315,
+   "Obanikoro": 870,
+   "Lekki Phase 1": 674,
+   "Ikoyi": 666,
+   "Victoria Island": 592,
+   "Unassigned": 157
+  },
+  "by_group": {
+   "Professional Services": 4815,
+   "Retail & Groceries": 3860,
+   "Health & Medical": 3843,
+   "Phones & Technology": 2923,
+   "Food & Restaurants": 2785,
+   "Construction & Building": 2550,
+   "Beauty & Personal Care": 2317,
+   "Education & Children": 2314,
+   "Automotive": 2138,
+   "Fashion & Clothing": 1956,
+   "Catering & Events Food": 1849,
+   "Insurance & Finance": 1837,
+   "Printing & Business Services": 1729,
+   "Other Local Services": 1451,
+   "Events & Creative Services": 1416,
+   "Logistics & Delivery": 1350,
+   "Furniture & Interiors": 1344,
+   "Laundry & Cleaning": 1257,
+   "Baking & Desserts": 1142,
+   "Religious & Community": 1107,
+   "Bars & Entertainment": 983,
+   "Real Estate & Property": 951,
+   "Home Services": 681,
+   "Fitness & Wellness": 649,
+   "Power & Energy": 633,
+   "Security": 582,
+   "Hospitality": 351,
+   "Agriculture & Food Supply": 293,
+   "Water & Utilities": 103
+  },
+  "contactable": 37359,
+  "enrichment": {
+   "website": 8483,
+   "email": 390,
+   "whatsapp": 207,
+   "instagram": 439,
+   "facebook": 313
+  }
+ }
+}
