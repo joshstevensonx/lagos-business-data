@@ -38,4 +38,4 @@ def test_unreachable_overpass_is_not_fatal(magazine_run):
     summary = discover(magazine_run)
     assert summary['failed'] == 1 and summary['raw_rows'] == 0
     assert magazine_run.state.searches()[0]['status'] == 'error'
-    assert 'directories' in summary['sources_not_built']
+    assert summary['sources_not_built'] == []

@@ -101,6 +101,7 @@ class DirectoriesCfg(Strict):
                         'nigeriagalleria', 'connectnigeria']] = ['finelib', 'ngex', 'cybo', 'businesslist']
     rate_per_second: float = Field(1.0, gt=0, le=1.0)
     contact_email: str = ''
+    businesslist_pages: int = Field(150, ge=0, le=1500)   # all-Lagos list; geo stage keeps the catchment
 
 
 class SiteContactsCfg(Strict):

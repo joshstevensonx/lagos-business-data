@@ -76,7 +76,7 @@ class Run:
         base = Path(out_dir or cfg.output.dir)
         run = cls(cfg, areas, base / rid, config_path, echo=echo)
         snap = run.dir / 'config.snapshot.yaml'
-        if not snap.exists():
+        if True:  # the latest config used is what resume/report should see
             snap.write_text(yaml.safe_dump(cfg.model_dump(mode='json', by_alias=True), sort_keys=False))
             (run.dir / 'areas.snapshot.yaml').write_text(
                 yaml.safe_dump(areas.model_dump(mode='json', by_alias=True, exclude_none=True), sort_keys=False))

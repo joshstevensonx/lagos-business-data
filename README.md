@@ -30,13 +30,29 @@ free tier is supported but **off by default** and must stay that way unless Josh
 | 1 | Scaffold, pydantic config (unknown keys are errors), SQLite run state, record schema, JSONL log; `tree`, `classify` and `taxonomy` ported verbatim; `score` verbatim plus a record adapter; `normalise` and `merge` from `merge_and_classify.py` | **Done**, tests green |
 | 2 | `sources/osm.py` (`requests` transport, plus `--osm-via-browser`); never fatal | **Done**. Overpass is blocked from the cloud build container, so it is tested against a *synthetic* Overpass-shaped fixture |
 | 3 | Both workbook builders ported, plus `verify` (LibreOffice recalc, Python recount of every DASHBOARD KPI, schema, <5% unclassified, dedupe sanity, cross-tab row counts, spot-check CSV) | **Done**, tests green |
-| 4 | `sources/gmaps_browser.py`: render wait, concurrent contexts, backoff, CAPTCHA abort, `--max-searches`/`--max-runtime`, wide-viewport sweeps, `--top-ups` | **Done**. Tested against a recorded live feed (120 cards) and synthetic lazy-load/CAPTCHA pages, and smoke-run live |
+| 4 | `sources/gmaps_browser.py`: render wait, concurrent contexts, backoff, CAPTCHA abort, `--max-searches`/`--max-runtime`, wide-viewport sweeps, `--top-ups`, splitting at the 120-result feed cap | **Done**, live |
+| 5 | `sources/directories.py`: Finelib (area → category tree) and BusinessList (all-Lagos list with coordinates), robots.txt, ≤1 req/s per domain, fixture tests | **Done**, live. Cybo returns 403 to automated requests, VConnect timed out, NGEX has no area pages; all three are logged as skipped |
+| 6 | `enrichers/site_contacts.py`: emails, WhatsApp, socials, extra phones and delivery signals from each business's own site; robots.txt, cache, 2MB cap, per-host serial | **Done** |
+| 7 | `enrichers/place_pages.py`: Google place page for delivery signals, ordering link, phone, website and full address | **Done**, live |
+| 8 | `enrichers/places_api.py`: free tier only, **off by default**, explicit field masks, persisted usage counter capped at 80% | **Done**, not run (needs Josh's key and billing opt-in) |
 | 9 | `derive-centroids`, `--import-csv`, `--dedupe-report` | **Done** |
-| 5–8 | directories, site_contacts, place_pages, places_api | Not started |
 
 Sources and enrichers that are enabled in config but not built yet are **skipped with a logged notice**, and the workbook README tab says so.
 
 ### Run it
+
+A full run, as it was done for the October 2026 deliverables:
+```bash
+export LAGOSDATA_CHROMIUM=/opt/pw-browsers/chromium   # only if Playwright's own browser build is missing
+lagosdata discover --config config/magazine.yaml --run-id 2026-10-06-magazine           # Maps + OSM
+lagosdata discover --config config/magazine.yaml --run-id 2026-10-06-magazine --source directories
+lagosdata run --config config/magazine.yaml --run-id 2026-10-06-magazine --stages geo,classify,dedupe,enrich,score,report,verify
+# delivery: discover first, derive the area centres from the results, then build
+lagosdata discover --config config/delivery.yaml --run-id 2026-10-06-delivery
+lagosdata run --config config/delivery.yaml --run-id 2026-10-06-delivery --stages geo
+lagosdata derive-centroids --config config/delivery.yaml --run-id 2026-10-06-delivery --write
+lagosdata run --config config/delivery.yaml --run-id 2026-10-06-delivery --stages geo,classify,dedupe,enrich,score,report,verify
+```
 
 ```bash
 pip install -e ".[dev,browser]"    # browser = Playwright, for Google Maps and --osm-via-browser

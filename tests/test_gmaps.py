@@ -44,8 +44,8 @@ def test_parse_card_old_shape_and_empty_address():
 def test_plan_uses_sweeps(magazine_run):
     src = GmapsBrowserSource(magazine_run)
     plan = src.plan()
-    assert len(plan) == 321 * 2
-    assert src._maps_url(plan[0]) == 'https://www.google.com/maps/search/provision%20store/@6.5600,3.3700,14z?hl=en'
+    assert len(plan) == 321                                   # one wide viewport covers all seven areas
+    assert src._maps_url(plan[0]) == 'https://www.google.com/maps/search/provision%20store/@6.5613,3.3721,14z?hl=en'
 
 
 @requires_playwright
@@ -143,3 +143,12 @@ def test_parse_card_no_reviews_and_icon_glyphs():
     f = parse_card({'aria': 'J', 'leaves': ['J', '4.7', '(6)', 'Pharmacy', '·', '16 Ajayi Aina St', 'Open',
                                             '· Closes 9 PM', '·', '+234 904 999 4999', '']})
     assert f['reviews'] == 6 and f['addr'] == '16 Ajayi Aina St' and f['phone'] == '+234 904 999 4999'
+
+
+def test_splits_skip_quadrants_outside_the_catchment():
+    from lagosdata.sources.gmaps_browser import child_searches
+    s = Search('x', 'sweep 6.5613,3.3721,15z')
+    assert len(child_searches(s)) == 4
+    ne_bbox = (6.570, 3.390, 6.580, 3.400)                   # only the north-east quadrant reaches it
+    kids = child_searches(s, ne_bbox)
+    assert [k.area for k in kids] == ['sweep 6.5695,3.3868,16z']

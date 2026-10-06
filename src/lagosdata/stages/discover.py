@@ -50,10 +50,13 @@ class Recorder:
         self.run.state.fail(self.source, s.term, s.area, 'interrupted before completion', status='pending')
 
 
-def discover(run, only_area: str | None = None, only_term: str | None = None) -> dict:
+def discover(run, only_area: str | None = None, only_term: str | None = None,
+             only_source: str | None = None) -> dict:
     summary = {'searched': 0, 'skipped_done': 0, 'failed': 0, 'raw_rows': 0, 'sources_not_built': [],
                'aborted': []}
     for name in enabled_sources(run):
+        if only_source and name != only_source:
+            continue
         if name not in IMPLEMENTED:
             summary['sources_not_built'].append(name)
             run.log.event('skip', f'{name}: enabled in config but not built yet - skipped', source=name)
