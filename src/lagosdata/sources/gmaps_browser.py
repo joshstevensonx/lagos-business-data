@@ -94,14 +94,35 @@ def viewport_of(area_label: str):
     return (float(m.group(1)), float(m.group(2)), int(m.group(3))) if m else None
 
 
-def child_searches(s: Search) -> list[Search]:
+def viewport_bounds(lat: float, lng: float, zoom: int):
+    """(south, west, north, east) shown by a REF_VIEWPORT-sized window."""
+    import math
+    deg_per_px = 360 / (256 * 2 ** zoom)
+    hw = REF_VIEWPORT[0] * deg_per_px / 2
+    hh = REF_VIEWPORT[1] * deg_per_px * math.cos(math.radians(lat)) / 2
+    return lat - hh, lng - hw, lat + hh, lng + hw
+
+
+def _intersects(a, b) -> bool:
+    return not (a[2] < b[0] or b[2] < a[0] or a[3] < b[1] or b[3] < a[1])
+
+
+def child_searches(s: Search, bbox=None) -> list[Search]:
+    """Quadrant searches for a saturated search. With `bbox` (the catchment), quadrants that
+    do not overlap it are skipped - no point re-searching Ikeja to find Anthony's shops."""
     v = viewport_of(s.area)
     if not v or v[2] >= MAX_SPLIT_ZOOM:
         return []
     prefix = s.area.split(' ')[0] if s.area.startswith('sweep') else s.area.split(' @')[0]
     return [Search(term=s.term, area=f'{prefix} {la:.4f},{lo:.4f},{z}z' if prefix == 'sweep'
-                   else f'{prefix} @{la:.4f},{lo:.4f},{z}z') for la, lo, z in split_viewport(*v)]
+                   else f'{prefix} @{la:.4f},{lo:.4f},{z}z') for la, lo, z in split_viewport(*v)
+            if bbox is None or _intersects(viewport_bounds(la, lo, z), bbox)]
 
+
+# The map canvas is never read; without these flags each headless Chrome renders Google's
+# WebGL map in software, which made the run CPU-bound (load 17 on 4 cores).
+LAUNCH_ARGS = ['--disable-3d-apis', '--disable-gpu', '--disable-dev-shm-usage', '--mute-audio',
+               '--disable-extensions', '--disable-background-networking']
 
 VIEWPORTS = [(1366, 768), (1440, 900), (1536, 864), (1280, 800), (1600, 900)]
 
@@ -194,6 +215,10 @@ class GmapsBrowserSource(Source):
                 self.best[s['term']] = max(self.best.get(s['term'], 0), s['raw_count'])
 
     # ---------------------------------------------------------------- plan
+    def catchment_bbox(self):
+        from ..areas import bbox_for
+        return bbox_for(self.run.cfg.areas, self.run.areas.areas, 0.5)
+
     def terms(self) -> list[str]:
         tx = self.run.cfg.taxonomy
         return list(tx.terms) if tx.mode == 'subset' else list(tx.terms or ALL_TERMS)
@@ -222,7 +247,7 @@ class GmapsBrowserSource(Source):
         out, seen = [], set()
         while saturated:
             s = saturated.pop()
-            for c in child_searches(s):
+            for c in child_searches(s, self.catchment_bbox()):
                 if (c.term, c.area) in seen:
                     continue
                 seen.add((c.term, c.area))
@@ -295,7 +320,7 @@ class GmapsBrowserSource(Source):
         self.started_n = 0
         self.t0 = time.monotonic()
         async with async_playwright() as p:
-            kw = {'headless': True}
+            kw = {'headless': True, 'args': LAUNCH_ARGS}
             if self.executable_path:
                 kw['executable_path'] = self.executable_path
             browser = await p.chromium.launch(**kw)
@@ -326,6 +351,10 @@ class GmapsBrowserSource(Source):
         except Exception:  # noqa: BLE001
             pass
         ctx = await browser.new_context(viewport={'width': w, 'height': h}, locale='en-GB', user_agent=ua)
+        # only the results list is read: skip map tiles, photos, fonts and media. Faster pages,
+        # and less load on Google than a normal visitor.
+        await ctx.route('**/*', lambda route: route.abort()
+                        if route.request.resource_type in ('image', 'media', 'font') else route.continue_())
         return ctx, await ctx.new_page()
 
     async def _worker(self, wid, browser, queue, rec):
@@ -380,7 +409,7 @@ class GmapsBrowserSource(Source):
                 done_here += 1
                 rec.done(s, rows)
                 if self.split and len(rows) >= FEED_CAP:
-                    kids = [c for c in child_searches(s) if not self.run.state.is_done(self.name, c.term, c.area)]
+                    kids = [c for c in child_searches(s, self.catchment_bbox()) if not self.run.state.is_done(self.name, c.term, c.area)]
                     if kids:
                         self.run.log.event('split', f'"{s.term}" @ {s.area} hit the {FEED_CAP}-result feed cap; '
                                            f'adding {len(kids)} zoomed-in quadrant searches', source=self.name)

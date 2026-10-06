@@ -147,7 +147,7 @@ def apify_view(b):
     if meta.get('delivery_hours'):
         rec['additionalOpeningHours.Delivery.hours'] = meta['delivery_hours']
     if meta.get('order_online_url') or 'online ordering' in (b.delivery_text_signals or []):
-        rec['servicesLink'] = meta.get('order_online_url') or b.website
+        rec['servicesLink'] = meta.get('order_online_url') or b.website or 'website text: order online'
     return rec
 
 

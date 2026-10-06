@@ -12,14 +12,15 @@ sources:
   osm:          { enabled: true, via_browser: false, bbox_pad_km: 2.0 }
   gmaps_browser:
     enabled: true
-    concurrency: 3
+    concurrency: 4          # + 2 for a concurrent delivery run = the hard cap of 6
     zoom: 14
+    # One zoom-14 viewport (~13 x 7 km) already spans all seven areas. Searches that hit
+    # the 120-result feed cap are split into zoomed-in quadrants that overlap the catchment.
     sweeps:
-      - { center: [6.5600, 3.3700], zoom: 14 }
-      - { center: [6.5750, 3.3800], zoom: 14 }
-    delay_seconds: [2, 6]
-    max_searches: 400
-    max_runtime_minutes: 240
+      - { center: [6.5613, 3.3721], zoom: 14 }
+    delay_seconds: [1.5, 3.5]
+    max_searches: 1500
+    max_runtime_minutes: 70
   directories:
     enabled: true
     sites: [finelib, ngex, cybo, businesslist]

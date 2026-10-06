@@ -14,9 +14,20 @@ delivery_scoring:
   keep_all: true            # score everything, keep every record
 
 sources:
-  gmaps_browser: { enabled: true, concurrency: 3, max_searches: 250 }
+  gmaps_browser:
+    enabled: true
+    concurrency: 2
+    delay_seconds: [1.5, 3.5]
+    max_searches: 600
+    max_runtime_minutes: 70
+    # Search viewports only - NOT area geometry. Areas are assigned afterwards from
+    # centroids derived from the results (derive-centroids).
+    sweeps:
+      - { center: [6.4450, 3.4450], zoom: 14 }   # Victoria Island, Ikoyi, Lekki Phase 1
+      - { center: [6.4550, 3.5450], zoom: 14 }   # Lekki-Epe corridor to Ajah
+      - { center: [6.5030, 3.3620], zoom: 14 }   # Yaba, Surulere
   osm:           { enabled: true }
-  directories:   { enabled: true, sites: [finelib, cybo] }
+  directories:   { enabled: true, sites: [finelib, businesslist] }   # cybo: 403 to automated requests
   site_contacts: { enabled: true, max_sites: 800 }
 
 enrich:

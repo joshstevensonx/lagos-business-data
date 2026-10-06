@@ -22,7 +22,11 @@ def magazine_run(tmp_path, overpass_fixture):
     cfg, areas, path = load_config(ROOT / 'config' / 'magazine.yaml')
     run = Run.create(cfg, areas, path, run_id='test-magazine', out_dir=str(tmp_path), echo=False)
     run.options['source_kwargs'] = {'osm': {'transport': lambda q: overpass_fixture}}
-    run.cfg.sources.gmaps_browser.enabled = False      # tests never touch live Google Maps
+    # tests never touch the network: no live Maps, directories, website crawl or place pages
+    run.cfg.sources.gmaps_browser.enabled = False
+    run.cfg.sources.directories.enabled = False
+    run.cfg.sources.site_contacts.enabled = False
+    run.cfg.enrich.place_pages.enabled = False
     yield run
     run.close()
 

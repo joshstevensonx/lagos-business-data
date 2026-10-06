@@ -98,6 +98,7 @@ def main(argv=None) -> int:
     p.add_argument('--run-id')
     p.add_argument('--area', help='only searches whose area/viewport label contains this text')
     p.add_argument('--term')
+    p.add_argument('--source', help='run only this source (e.g. directories), for running sources side by side')
     _collect_opts(p)
     _common(p)
 
@@ -139,7 +140,8 @@ def main(argv=None) -> int:
             stages = args.stages.split(',') if args.stages else None
             ok = run_stages(run, stages)
         elif args.cmd == 'discover':
-            ok = run_stages(run, ['discover'], only_area=args.area, only_term=args.term)
+            ok = run_stages(run, ['discover'], only_area=args.area, only_term=args.term,
+                            only_source=args.source)
         elif args.cmd == 'resume':
             ok = run_stages(run, None)
         elif args.cmd == 'report':

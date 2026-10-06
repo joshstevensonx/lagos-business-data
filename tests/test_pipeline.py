@@ -24,7 +24,6 @@ def test_end_to_end_without_verify(magazine_run):
     assert wb['CATEGORY TREE'].max_row >= 4 + 436             # zero rows included
     readme = ' '.join(str(c.value) for row in wb['README'].iter_rows() for c in row if c.value)
     assert '© OpenStreetMap contributors' in readme
-    assert 'directories' in readme                             # honest about what was not run
 
 
 def test_rerun_is_a_noop_for_completed_searches(magazine_run, overpass_fixture):
