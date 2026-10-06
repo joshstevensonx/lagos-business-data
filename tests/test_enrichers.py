@@ -78,7 +78,7 @@ def test_place_page_results_persist_across_rebuilds(magazine_run, monkeypatch):
         return {id(b): PP.parse_place({'items': {'action:4': {'href': 'https://glovo.example', 'label': ''}}}, [])
                 for b in targets}
     monkeypatch.setattr(PP, '_visit_all', fake_visit)
-    recs = PP.enrich(magazine_run, [Business(name='A', maps=maps, reviews=50)])
+    recs = PP.enrich(magazine_run, [Business(name='A', label='Restaurant', area='Yaba', maps=maps, reviews=50)])
     assert recs[0].score_basis == S.BASIS_FULL
-    again = PP.enrich(magazine_run, [Business(name='A', maps=maps, reviews=50)])   # rebuilt record
+    again = PP.enrich(magazine_run, [Business(name='A', label='Restaurant', area='Yaba', maps=maps, reviews=50)])
     assert again[0].score_basis == S.BASIS_FULL and calls == [1]                   # applied from cache, no visit

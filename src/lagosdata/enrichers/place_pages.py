@@ -178,7 +178,11 @@ def enrich(run, recs):
     cache_path = run.dir / 'cache' / 'place_pages.jsonl'
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache = _load_cache(cache_path)
-    cand = [b for b in recs if b.maps.startswith('https://www.google.com/maps/place/') and _key(b) not in cache]
+    from .. import score as S
+    from ..record import OUTSIDE, UNASSIGNED
+    cand = [b for b in recs if b.maps.startswith('https://www.google.com/maps/place/') and _key(b) not in cache
+            # the budget goes to in-scope prospects inside the catchment
+            and S.category_of(S.apify_view(b)) != 'Other' and b.area not in (OUTSIDE, UNASSIGNED)]
     # reviews_desc: review counts come from the feed (missing on some cards - those go last)
     cand.sort(key=lambda b: -(b.reviews if isinstance(b.reviews, int) else -1))
     budget = max(0, cfg.max_place_visits - len(cache))

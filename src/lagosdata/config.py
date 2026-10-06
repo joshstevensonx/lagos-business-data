@@ -139,7 +139,8 @@ class Bands(Strict):
 class DeliveryScoringCfg(Strict):
     enabled: bool = False
     bands: Bands = Bands()
-    keep_all: bool = True
+    keep_all: bool = True          # keep every in-scope prospect, whatever its score
+    in_scope_only: bool = True     # drop records that are not food / grocery / pharmacy (counted in run.log)
 
     @field_validator('bands')
     @classmethod
