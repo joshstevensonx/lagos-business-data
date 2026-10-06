@@ -1,0 +1,27 @@
+pipeline: delivery
+run_id_prefix: delivery
+areas: [Lekki Phase 1, Lekki-Epe Corridor to Ajah, Victoria Island, Ikoyi, Yaba, Surulere]
+core_areas: []
+
+taxonomy:
+  mode: subset
+  terms: [restaurant, fast food, supermarket, grocery store, pharmacy, chemist,
+          bakery, catering, mini mart, provision store, hypermarket, food store]
+
+delivery_scoring:
+  enabled: true
+  bands: { hot: 60, warm: 40, cool: 25 }
+  keep_all: true            # score everything, keep every record
+
+sources:
+  gmaps_browser: { enabled: true, concurrency: 3, max_searches: 250 }
+  osm:           { enabled: true }
+  directories:   { enabled: true, sites: [finelib, cybo] }
+  site_contacts: { enabled: true, max_sites: 800 }
+
+enrich:
+  place_pages: { enabled: true, max_place_visits: 500, order_by: reviews_desc }
+
+output:
+  dir: out/
+  workbook: Lagos_Delivery_Prospects_v2.xlsx

@@ -1,0 +1,20 @@
+# Shared area registry. Centroids are DERIVED, never guessed (SPEC §4.1): the median
+# position of businesses whose address explicitly names the area.
+# One geometry per area: lat/lng/radius_km, corridor {from, to, width_km}, or polygon [[lat, lng], ...].
+areas:
+  "Anthony / Anthony Village": { lat: 6.55982, lng: 3.36915, radius_km: 1.30, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Maryland / Mende":          { lat: 6.57229, lng: 3.36717, radius_km: 1.30, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Ilupeju":                   { lat: 6.54548, lng: 3.35989, radius_km: 1.40, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Gbagada":                   { lat: 6.55144, lng: 3.38653, radius_km: 1.60, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Obanikoro":                 { lat: 6.54773, lng: 3.36824, radius_km: 1.00, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Palmgrove":                 { lat: 6.53952, lng: 3.36767, radius_km: 1.00, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  "Ojota":                     { lat: 6.58282, lng: 3.38447, radius_km: 1.40, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
+  # Delivery-pipeline areas: no centroids yet - `derive-centroids` fills these on first run.
+  # Until then records are matched to them only by area name or alias in the address.
+  # Aliases are neighbourhood names along each area - unconfirmed, Josh to check.
+  "Lekki Phase 1":              { aliases: ["Lekki Phase One", "Lekki Ph 1"] }
+  "Lekki-Epe Corridor to Ajah": { aliases: ["Ajah", "Sangotedo", "Abraham Adesanya", "Chevron", "Ikota", "Osapa", "Agungi", "Jakande", "Lekki-Epe", "Lekki Epe"] }
+  "Victoria Island":            { aliases: ["Victoria Island Annex"] }
+  "Ikoyi":                      { aliases: [] }
+  "Yaba":                       { aliases: ["Sabo", "Akoka", "Onike"] }
+  "Surulere":                   { aliases: ["Aguda", "Ojuelegba", "Bode Thomas", "Adeniran Ogunsanya"] }

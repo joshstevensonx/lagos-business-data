@@ -1,0 +1,35 @@
+pipeline: magazine
+run_id_prefix: magazine
+areas: [Anthony / Anthony Village, Maryland / Mende, Ilupeju, Gbagada, Obanikoro, Palmgrove, Ojota]
+core_areas: [Anthony / Anthony Village, Maryland / Mende]
+
+taxonomy:
+  mode: full_tree          # all 29 groups, 321 terms
+  terms: null              # or an explicit subset
+
+sources:
+  places_api:   { enabled: false, monthly_ceiling_pct: 80, skus: [essentials] }
+  osm:          { enabled: true, via_browser: false, bbox_pad_km: 2.0 }
+  gmaps_browser:
+    enabled: true
+    concurrency: 3
+    zoom: 14
+    sweeps:
+      - { center: [6.5600, 3.3700], zoom: 14 }
+      - { center: [6.5750, 3.3800], zoom: 14 }
+    delay_seconds: [2, 6]
+    max_searches: 400
+    max_runtime_minutes: 240
+  directories:
+    enabled: true
+    sites: [finelib, ngex, cybo, businesslist]
+    rate_per_second: 1.0
+    contact_email: "ops@nexora.example"     # sent as User-Agent contact
+  site_contacts: { enabled: true, max_sites: 1500, concurrency: 5 }
+
+enrich:
+  place_pages: { enabled: false }           # magazine does not need attribute chips
+
+output:
+  dir: out/
+  workbook: Anthony_Community_Media_MASTER_DATABASE_v4.xlsx
