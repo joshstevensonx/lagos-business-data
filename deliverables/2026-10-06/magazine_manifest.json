@@ -1,0 +1,134 @@
+{
+  "run_id": "2026-10-06-magazine",
+  "created_at": "2026-10-06T18:41:00+00:00",
+  "updated_at": "2026-10-06T19:58:42+00:00",
+  "pipeline": "magazine",
+  "versions": {
+    "lagosdata": "0.1.0",
+    "python": "3.13.16"
+  },
+  "discover": {
+    "searched": 722,
+    "skipped_done": 34,
+    "failed": 1,
+    "raw_rows": 64270,
+    "sources_not_built": [
+      "directories"
+    ],
+    "aborted": []
+  },
+  "timings": {
+    "discover": 4325.76,
+    "geo": 7.24,
+    "classify": 11.89,
+    "dedupe": 8.2,
+    "enrich": 105.2,
+    "score": 3.1,
+    "report": 43.82,
+    "verify": 46.85
+  },
+  "geo": {
+    "records": 70819,
+    "Outside catchment": 48092,
+    "Gbagada": 6433,
+    "Palmgrove": 2353,
+    "Maryland / Mende": 2722,
+    "Ojota": 3731,
+    "Anthony / Anthony Village": 2926,
+    "Ilupeju": 2617,
+    "Obanikoro": 1704,
+    "Unassigned": 241
+  },
+  "classify": {
+    "records": 70819,
+    "unclassified": 1683
+  },
+  "dedupe": {
+    "in": 70819,
+    "merged": 36906,
+    "poi_dropped": 1,
+    "kept": 33902,
+    "conflicts": 4118
+  },
+  "robots_skips": {
+    "site_contacts": [
+      "https://linktr.ee/proply.ng",
+      "https://linktr.ee/Olamiphotos",
+      "https://linktr.ee/donikristenshoes",
+      "https://linktr.ee/franciestfoods",
+      "https://linktr.ee/bisoyeokwoli",
+      "https://www.nrsphysio.com/",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://www.instagram.com/contact",
+      "https://www.instagram.com/contact-us",
+      "https://www.instagram.com/about",
+      "https://www.instagram.com/order",
+      "https://www.instagram.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://pyxl.ai/editor/plumbing-pro-vhycs",
+      "https://br.bluepillow.com/search/67a22fd35a2dfa15b1827d3c?dest=bkng&cat=Apartment&lat=6.56435&lng=3.37042&language=pt",
+      "https://br.bluepillow.com/search/65c9f0a2671b07d23c68d0fb?dest=bkng&cat=Apartment&lat=6.56136&lng=3.38007&language=pt",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://jaygoodnessmultimedia.hs-sites-eu1.com/home",
+      "https://spytracksynergy.com/",
+      "https://realtorcharles.wordpress.com/",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://t.co/DhB4flHP8d",
+      "https://www.lumigrowagency.online/"
+    ]
+  },
+  "enrich": {
+    "records": 33902,
+    "ran": [
+      "site_contacts"
+    ],
+    "not_built": []
+  },
+  "score": {
+    "records": 33902
+  },
+  "report": {
+    "workbook": "out/2026-10-06-magazine/Anthony_Community_Media_MASTER_DATABASE_v4.xlsx",
+    "rows": 33902
+  },
+  "verify": {
+    "ok": true,
+    "failed": []
+  }
+}

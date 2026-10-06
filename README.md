@@ -23,6 +23,29 @@ free tier is supported but **off by default** and must stay that way unless Josh
 
 ---
 
+## Deliverables, 6 Oct 2026 (`deliverables/2026-10-06/`)
+
+Both workbooks passed every `verify` check: formulas recalculated with 0 errors, every DASHBOARD KPI recounted in Python, schema, <5% unclassified, dedupe sanity, and row counts across tabs. Each folder has the verify report, a 10-record spot-check sample for a human to check against the listings, the run manifest, and the full dedupe decision log.
+
+| | Magazine census, v4 | Delivery prospects, v2 |
+|---|---|---|
+| Workbook | `Anthony_Community_Media_MASTER_DATABASE_v4.xlsx` | `Lagos_Delivery_Prospects_v2.xlsx` |
+| Inside the catchment | **9,592** businesses across 7 areas (v3: 4,946) | **3,559** prospects across 6 areas (v1: 774): 1,914 food, 951 grocery, 694 pharmacy |
+| With a phone | 7,224 (75%) | 2,449 (69%) |
+| Kept as expansion leads (outside catchment) | 24,090 | 3,827 |
+| Classification | 29 groups, 280 of the 436 subcategories used; 3.5% "needs review" | 0.2% "needs review" |
+| Sources | Google Maps (756 searches), Finelib, BusinessList; 464 records cross-verified | Google Maps (≈300 searches), Finelib, BusinessList |
+| Enrichment | 1,500 business websites crawled: emails, WhatsApp, Instagram, Facebook | 544 websites crawled; **291 place pages checked** (Score basis = Full), 115 with an online-ordering link |
+
+**What is not complete, and why:**
+- **The 2-hour budget stopped both Maps runs before every zoomed-in split had run.** All 321 magazine terms and all 12 delivery terms ran at the wide and first-split levels. Some zoom-16/17 quadrant searches on the busiest terms are still pending. `lagosdata resume` runs them, and the SOURCE LOG tab lists every search.
+- **Delivery place pages:** 291 of the 500-visit budget were checked before the time limit. The other prospects show `Floor - not enriched`, meaning their score is a floor, not a verdict.
+- **Google showed no service-option chips (Delivery / Takeout / Catering)** on any Lagos place page checked. Only 19 prospects reach Hot, so the bands lean low. The scores are an honest call order, not a judgement of delivery volume.
+- **OpenStreetMap:** Overpass is unreachable from the build container, so it was skipped (logged).
+- **Directories:** Cybo refuses automated requests (403), VConnect timed out, and NGEX has no area pages; all three were skipped (logged).
+- **Many business websites block automated requests** behind a firewall. That was respected, which is why emails reach 300 rather than thousands.
+- **Six phone numbers are each shared by two distinct Google places** (branches on one hotline). They are kept separate and listed in the verify report.
+
 ## Build status (SPEC §10)
 
 | Step | What | Status |
@@ -83,4 +106,5 @@ Output goes to `out/<run-id>/`: `raw/*.jsonl` (untouched, append-only), `stages/
 - **The Maps feed stops at 120 results.** Every busy term in the 2-area smoke run returned exactly 120. So a wide zoom-14 sweep silently loses everything past the first 120 (SPEC §3.3(c) assumed it doesn't). The fix is built in: a search that hits the cap is split into 4 quadrant searches one zoom level closer, recursively up to zoom 17. The splits are rebuilt from state, so they survive a resume, and they all count against `max_searches`.
 - **Review counts appear on only some cards.** In the smoke run, 68% of in-catchment businesses had one; cards show "(26)" or "No reviews". Records without a count lose the review-based priority paths (magazine) and the order-volume proxy (delivery) until place-page enrichment fills them.
 - **Name-only dedupe was fusing chain branches.** Two Nett Pharmacy branches, for example, have different Google place IDs. A name match no longer merges two records that both have place IDs and the IDs differ. Phone matches still merge (SPEC §6.3: the strongest signal).
+- **Full runs (6 Oct, 2-hour budget):** the machine was the bottleneck (4 cores at load 17), not Google. Blocking images and fonts and turning off WebGL map rendering took magazine throughput from about 6 to about 11 searches a minute. There were no CAPTCHAs and no back-offs across roughly 1,050 searches.
 - **Live 2-area smoke run** (`config/smoke-2area.yaml`, 6 terms, one zoom-15 viewport): 720 cards became 713 unique businesses, 314 of them inside Anthony and Maryland. 0% unclassified, `verify` passed every check.

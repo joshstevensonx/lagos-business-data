@@ -76,3 +76,18 @@ def test_schema_check_catches_bad_phone(magazine_run):
     ok, checks = V.verify(magazine_run, recalc_fn=lambda p: p)
     schema = next(c for c in checks if c.name == 'schema')
     assert not schema.ok and 'malformed phones' in schema.detail
+
+
+def test_dedupe_sanity_allows_distinct_google_places_sharing_a_phone(magazine_run):
+    run_stages(magazine_run, ['discover', 'geo', 'classify', 'dedupe', 'enrich', 'score', 'report'])
+    data = json.loads(magazine_run.master_path.read_text())
+    data[0]['phone'] = data[1]['phone'] = '+2348090165942'
+    data[0]['place_id'], data[1]['place_id'] = '0x1:0xa', '0x1:0xb'       # two branches, one hotline
+    magazine_run.master_path.write_text(json.dumps(data))
+    ok, checks = V.verify(magazine_run, recalc_fn=lambda p: p)
+    c = next(c for c in checks if c.name == 'dedupe sanity')
+    assert c.ok and 'distinct Google places' in c.detail
+    data[1]['place_id'] = ''                                               # no Google identity: a real duplicate
+    magazine_run.master_path.write_text(json.dumps(data))
+    ok, checks = V.verify(magazine_run, recalc_fn=lambda p: p)
+    assert not next(c for c in checks if c.name == 'dedupe sanity').ok

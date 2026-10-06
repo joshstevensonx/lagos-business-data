@@ -187,6 +187,7 @@ def enrich(run, recs):
     cand.sort(key=lambda b: -(b.reviews if isinstance(b.reviews, int) else -1))
     budget = max(0, cfg.max_place_visits - len(cache))
     targets = cand[:budget]
+    results = {}
     if targets:
         results = asyncio.run(_visit_all(run, targets, os.environ.get('LAGOSDATA_CHROMIUM'),
                                          run.options.get('place_concurrency') or g.concurrency,
@@ -205,5 +206,5 @@ def enrich(run, recs):
             apply(b, p, used)
             applied += 1
     run.log.event('stage', f'place_pages: {applied} records have a checked place page '
-                  f'({len(targets)} visited this run, budget {cfg.max_place_visits})')
+                  f'({len(results)} of {len(targets)} planned visits completed this run, budget {cfg.max_place_visits})')
     return recs

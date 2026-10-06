@@ -206,11 +206,28 @@ def verify(run, recalc_fn=recalc) -> tuple[bool, list[Check]]:
                         f'{len(unc)}/{N} = {share:.1%}' + (f'; top labels: {top}' if share >= 0.05 else '')))
 
     # 5. dedupe sanity -------------------------------------------------------
-    dup_p = [p for p, n in collections.Counter(r.phone for r in recs if r.phone).items() if n > 1]
+    by_phone = collections.defaultdict(list)
+    for r in recs:
+        if r.phone:
+            by_phone[r.phone].append(r)
+    dup_p, shared_ok = [], []
+    for p, rs in by_phone.items():
+        if len(rs) < 2:
+            continue
+        ids = [r.place_id for r in rs]
+        # Google itself lists these as distinct places (e.g. two branches on one hotline): the
+        # place-id key outranks phone (SPEC §6.3), so this is not a dedupe failure - but say so
+        if all(ids) and len(set(ids)) == len(ids):
+            shared_ok.append(p)
+        else:
+            dup_p.append(p)
     dup_id = [p for p, n in collections.Counter(r.place_id for r in recs if r.place_id).items() if n > 1]
-    checks.append(Check('dedupe sanity', not dup_p and not dup_id,
-                        f'shared phones: {dup_p[:5]}; shared place_ids: {dup_id[:5]}' if dup_p or dup_id
-                        else 'no shared phone or place_id'))
+    detail = (f'shared phones: {dup_p[:5]}; shared place_ids: {dup_id[:5]}' if dup_p or dup_id
+              else 'no duplicate phone or place_id')
+    if shared_ok:
+        detail += (f'; {len(shared_ok)} phone(s) shared by distinct Google places (branches/one owner), '
+                   f'kept separate: {shared_ok[:5]}')
+    checks.append(Check('dedupe sanity', not dup_p and not dup_id, detail))
 
     # 6. row counts across tabs ----------------------------------------------
     if wb is not None:
