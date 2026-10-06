@@ -14,6 +14,8 @@ delivery_scoring:
   keep_all: true            # score everything, keep every record
 
 sources:
+  # Josh opted in (Oct 2026). Key from env GOOGLE_PLACES_API_KEY only; without it this is skipped.
+  places_api:    { enabled: true, monthly_ceiling_pct: 80, skus: [enterprise], top_n: 300 }
   gmaps_browser:
     enabled: true
     concurrency: 2

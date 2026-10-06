@@ -84,8 +84,12 @@ def enrich(run, recs, http=requests, budget: Budget | None = None):
     sku = 'enterprise' if 'enterprise' in cfg.skus else cfg.skus[-1]
     mask = FIELD_MASKS[sku]
     budget = budget or Budget(cfg.monthly_ceiling_pct)
-    cand = [b for b in recs if places_id(b.maps)]
-    cand.sort(key=lambda b: -(b.reviews if isinstance(b.reviews, int) else -1))
+    from ..record import OUTSIDE, UNASSIGNED
+    # free calls go where they change the most: in-catchment records missing a phone or
+    # website first, then by review count (the highest-value businesses)
+    cand = [b for b in recs if places_id(b.maps) and b.area not in (OUTSIDE, UNASSIGNED)]
+    cand.sort(key=lambda b: (bool(b.phone) and bool(b.website),
+                             -(b.reviews if isinstance(b.reviews, int) else -1)))
     from ..normalise import clean_phone
     done = 0
     for b in cand[:cfg.top_n]:

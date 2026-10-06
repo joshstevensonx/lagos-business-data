@@ -18,6 +18,8 @@ def _collect_opts(p, resume=False):
     p.add_argument('--dedupe-report', action='store_true', help='write every merge decision to dedupe_report.csv')
     p.add_argument('--max-searches', type=int, help='ceiling on Google Maps searches this invocation')
     p.add_argument('--max-runtime', type=int, help='wall-clock ceiling for Google Maps, minutes')
+    p.add_argument('--concurrency', type=int, choices=range(1, 7), metavar='1-6',
+                   help='Google Maps browser contexts for this invocation (hard cap 6)')
     if not resume:
         p.add_argument('--import-csv', action='append', default=[], metavar='FILE',
                        help='merge a hand-collected CSV through the same pipeline (repeatable)')
@@ -35,6 +37,8 @@ def _options(run, args):
     run.options['max_searches'] = getattr(args, 'max_searches', None)
     run.options['max_runtime'] = getattr(args, 'max_runtime', None)
     run.options['top_ups'] = getattr(args, 'top_ups', False)
+    if getattr(args, 'concurrency', None):
+        run.cfg.sources.gmaps_browser.concurrency = args.concurrency
     csvs = getattr(args, 'import_csv', None) or []
     for c in csvs:
         if not Path(c).is_file():
@@ -80,6 +84,52 @@ def derive_centroids_cmd(args) -> int:
     return 0
 
 
+ARCHIVE_PARTS = ['raw', 'state.sqlite', 'config.snapshot.yaml', 'areas.snapshot.yaml', 'manifest.json',
+                 'cache/place_pages.jsonl']
+
+
+def combine_cmd(args) -> int:
+    from .combine import combine
+    cfg, areas, path = load_config(args.config)
+    run = Run.create(cfg, areas, path, run_id=args.run_id, out_dir=args.out, echo=not args.quiet)
+    sources = [Run.open(r, out_dir=args.out, echo=False) for r in args.sources]
+    try:
+        print(combine(run, sources))
+        ok = run_stages(run, ['report', 'verify'])
+    finally:
+        for s in sources:
+            s.close()
+        run.close()
+    return 0 if ok else 1
+
+
+def archive_cmd(args) -> int:
+    """Pack what cannot be re-fetched cheaply (raw rows, search state, place-page results) so a
+    run can continue in another session. Derived stages and the website cache are rebuilt."""
+    import tarfile
+    d = Path(args.out) / args.run_id
+    dest = Path(args.file or f'{args.run_id}.tar.gz')
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(dest, 'w:gz') as tar:
+        for part in ARCHIVE_PARTS:
+            if (d / part).exists():
+                tar.add(d / part, arcname=f'{args.run_id}/{part}')
+    print(f'archived {d} -> {dest} ({dest.stat().st_size // 1024} KB)')
+    return 0
+
+
+def restore_cmd(args) -> int:
+    import tarfile
+    with tarfile.open(args.file, 'r:gz') as tar:
+        names = tar.getnames()
+        bad = [n for n in names if n.startswith('/') or '..' in Path(n).parts]
+        if bad:
+            raise SystemExit(f'refusing archive with unsafe paths: {bad[:3]}')
+        tar.extractall(args.out, filter='data')
+    print(f'restored {len(names)} entries into {args.out}/')
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog='lagosdata', description='Free-source Lagos business data collector')
     sub = ap.add_subparsers(dest='cmd', required=True)
@@ -110,6 +160,21 @@ def main(argv=None) -> int:
     p.add_argument('--any-source', action='store_true', help='also use non-Google records with coordinates')
     p.add_argument('--default-radius', type=float, default=1.3)
 
+    p = sub.add_parser('combine', help='merge finished runs into one MASTER DATABASE workbook, then verify')
+    p.add_argument('--config', required=True, help='e.g. config/combined.yaml')
+    p.add_argument('--from', dest='sources', action='append', required=True, metavar='RUN_ID')
+    p.add_argument('--run-id', required=True)
+    p.add_argument('--out', default='out')
+    p.add_argument('--quiet', action='store_true')
+
+    p = sub.add_parser('archive', help='pack a run (raw, state, place-page cache) to continue elsewhere')
+    p.add_argument('--run-id', required=True)
+    p.add_argument('--out', default='out')
+    p.add_argument('--file', help='destination .tar.gz (default: <run-id>.tar.gz)')
+    p = sub.add_parser('restore', help='unpack a run archive into the output directory')
+    p.add_argument('--file', required=True)
+    p.add_argument('--out', default='out')
+
     for name, hlp in (('resume', 'continue an interrupted run from its saved config'),
                       ('report', 'rebuild the workbook only'),
                       ('verify', 'recount and check a built workbook')):
@@ -123,6 +188,12 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if args.cmd == 'derive-centroids':
         return derive_centroids_cmd(args)
+    if args.cmd == 'archive':
+        return archive_cmd(args)
+    if args.cmd == 'combine':
+        return combine_cmd(args)
+    if args.cmd == 'restore':
+        return restore_cmd(args)
 
     if args.cmd in ('run', 'discover'):
         cfg, areas, path = load_config(args.config)
