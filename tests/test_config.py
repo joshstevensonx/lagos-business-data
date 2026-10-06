@@ -12,7 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 @pytest.mark.parametrize('name', ['magazine.yaml', 'delivery.yaml'])
 def test_shipped_configs_validate(name):
     cfg, reg, _ = load_config(ROOT / 'config' / name)
-    assert cfg.sources.places_api.enabled is False        # off by default, must stay that way
+    # Josh opted in to the free tier (Oct 2026): the shipped configs enable it, but the key
+    # lives only in the environment, and the code default stays off
+    assert 'AIza' not in (ROOT / 'config' / name).read_text()
+    from lagosdata.config import PlacesApiCfg
+    assert PlacesApiCfg().enabled is False
 
 
 def test_typo_is_an_error_not_a_default():

@@ -32,11 +32,25 @@ COLS = ['ID', 'Business Name', 'Zone', 'Catchment', 'Street / Cluster', 'Categor
         'Date Added', 'Last Checked', 'Verification', 'Prospect Priority', 'Suggested Package',
         'Sales Status', 'Sales Notes',
         # appended after the delivered v3 layout so the client's familiar columns do not move
-        'WhatsApp', 'Email', 'Instagram', 'Facebook', 'Contact Channels', 'All Sources']
+        'WhatsApp', 'Email', 'Instagram', 'Facebook', 'Contact Channels', 'All Sources',
+        # delivery prospecting (filled where the record was scored by the delivery pipeline)
+        'Programme', 'Delivery Category', 'Delivery Score', 'Delivery Band', 'Score Basis']
 SALES = 'Not Contacted,Contacted,Meeting Booked,Proposal Sent,Won,Declined,Do Not Contact'
 PRIORITY_A = 'A - High commercial relevance'
 PRIORITY_B = 'B - Potential advertiser'
 PRIORITY_C = 'C - Ring area, contactable'
+
+
+MAGAZINE_AREAS = ['Anthony / Anthony Village', 'Maryland / Mende', 'Ilupeju', 'Gbagada', 'Obanikoro',
+                  'Palmgrove', 'Ojota']
+
+
+def programme(area: str, areas: list[str]) -> str:
+    if area in MAGAZINE_AREAS:
+        return 'Magazine catchment'
+    if area in areas:
+        return 'Delivery area'
+    return ''
 
 
 def _num(v, cast):
@@ -75,7 +89,8 @@ def build(recs, cfg, searches, info) -> tuple[Workbook, dict]:
                 _num(r.lat, float), _num(r.lng, float), r.source, r.added, TODAY, r.verification,
                 r.priority, r.package, r.sales_status, r.notes,
                 r.whatsapp, r.email, r.instagram, r.facebook, r.contact_channels,
-                '; '.join(r.sources_all)]
+                '; '.join(r.sources_all),
+                programme(r.area, CORE + RING), r.delivery_category, r.score, r.band, r.score_basis]
         for c, v in enumerate(vals, start=1):
             cell = ws.cell(row=rr, column=c, value=blank(v))
             cell.font = body
@@ -92,7 +107,7 @@ def build(recs, cfg, searches, info) -> tuple[Workbook, dict]:
         if r.zone == CORE_ZONE:
             ws.cell(row=rr, column=C.n('Zone')).font = Font(name=FONT, size=10, bold=True, color=NAVY)
     widths(ws, [6, 38, 15, 26, 26, 26, 26, 26, 20, 44, 17, 26, 30, 9, 10, 9, 12, 12, 28, 12, 12, 20, 30, 14,
-                16, 28, 17, 28, 24, 24, 10, 36])
+                16, 28, 17, 28, 24, 24, 10, 36, 20, 20, 10, 28, 20])
     ws.freeze_panes = 'C2'
     ws.auto_filter.ref = f'A1:{get_column_letter(len(COLS))}{LAST}'
     dv_area = DataValidation(type='list', formula1='"' + ','.join(AREAS + EXTRA) + '"', allow_blank=True)
@@ -104,7 +119,8 @@ def build(recs, cfg, searches, info) -> tuple[Workbook, dict]:
     # ============================== DASHBOARD ================================
     ws = wb.create_sheet('DASHBOARD', 0)
     ws.sheet_view.showGridLines = False
-    ws['A1'] = f'ANTHONY COMMUNITY MEDIA - BUSINESS DATABASE ({info["run_id"]})'; ws['A1'].font = title_font
+    ws['A1'] = info.get('title') or f'ANTHONY COMMUNITY MEDIA - BUSINESS DATABASE ({info["run_id"]})'
+    ws['A1'].font = title_font
     ws['A2'] = (f'{len(AREAS)} catchments  |  {len(TREE)} category groups  |  '
                 f'{sum(len(d["subs"]) for d in TREE.values())}-subcategory tree  |  Last refreshed {TODAY}')
     ws['A2'].font = sub_font
@@ -115,7 +131,7 @@ def build(recs, cfg, searches, info) -> tuple[Workbook, dict]:
     kpis = [
         ('total', 'Total businesses in database (all zones)', f'=COUNTA({C.rng(MD, "Business Name", LAST, False)})'),
         ('core', f'Core catchment ({core_names})', f'=COUNTIF({R("Zone")},"{CORE_ZONE}")'),
-        ('ring', f'Ring areas ({len(RING)} surrounding)', f'=COUNTIF({R("Zone")},"{RING_ZONE}")'),
+        ('ring', info.get('ring_label') or f'Ring areas ({len(RING)} surrounding)', f'=COUNTIF({R("Zone")},"{RING_ZONE}")'),
         ('outside', 'Outside catchment (expansion leads - not in headline counts)', f'=COUNTIF({R("Zone")},"{OUTSIDE}")'),
         ('unassigned', 'Unassigned (no coordinates, area not in address)', f'=COUNTIF({R("Zone")},"{UNASSIGNED}")'),
         ('phone', 'With a phone number', f'=COUNTIF({R("Has Phone")},"Yes")'),

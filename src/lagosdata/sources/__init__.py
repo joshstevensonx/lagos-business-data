@@ -9,4 +9,4 @@ IMPLEMENTED = {'osm': OsmSource, 'gmaps_browser': GmapsBrowserSource, 'manual_cs
                'directories': DirectoriesSource}
 
 # run order (SPEC §3): later sources fill gaps left by earlier ones
-ORDER = ['places_api', 'osm', 'gmaps_browser', 'directories']
+ORDER = ['osm', 'gmaps_browser', 'directories']   # places_api is an enricher (SPEC §3.1: not for discovery)

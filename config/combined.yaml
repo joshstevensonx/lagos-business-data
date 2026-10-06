@@ -1,0 +1,16 @@
+# Combined MASTER DATABASE: the magazine census + the delivery prospects, one sheet.
+# Built from finished runs with `lagosdata combine` (no searching of its own).
+pipeline: magazine
+run_id_prefix: combined
+areas: [Anthony / Anthony Village, Maryland / Mende, Ilupeju, Gbagada, Obanikoro, Palmgrove, Ojota,
+        Lekki Phase 1, Lekki-Epe Corridor to Ajah, Victoria Island, Ikoyi, Yaba, Surulere]
+core_areas: [Anthony / Anthony Village, Maryland / Mende]
+sources:
+  places_api:    { enabled: false }
+  osm:           { enabled: false }
+  gmaps_browser: { enabled: false }
+  directories:   { enabled: false }
+  site_contacts: { enabled: false }
+output:
+  dir: out/
+  workbook: Lagos_Combined_MASTER_DATABASE.xlsx

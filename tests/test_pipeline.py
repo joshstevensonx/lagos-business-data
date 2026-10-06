@@ -91,3 +91,18 @@ def test_dedupe_sanity_allows_distinct_google_places_sharing_a_phone(magazine_ru
     magazine_run.master_path.write_text(json.dumps(data))
     ok, checks = V.verify(magazine_run, recalc_fn=lambda p: p)
     assert not next(c for c in checks if c.name == 'dedupe sanity').ok
+
+
+def test_archive_and_restore_round_trip(magazine_run, tmp_path):
+    from lagosdata.cli import main
+    run_stages(magazine_run, ['discover'])
+    out = str(magazine_run.dir.parent)
+    f = str(tmp_path / 'a.tar.gz')
+    assert main(['archive', '--run-id', magazine_run.id, '--out', out, '--file', f]) == 0
+    dest = tmp_path / 'restored'
+    assert main(['restore', '--file', f, '--out', str(dest)]) == 0
+    from lagosdata.run import Run
+    r2 = Run.open(magazine_run.id, out_dir=str(dest), echo=False)
+    assert len(r2.read_raw('osm')) == len(magazine_run.read_raw('osm'))
+    assert r2.state.is_done('osm', 'osm:magazine', magazine_run.state.searches()[0]['area'])
+    r2.close()

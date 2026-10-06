@@ -71,3 +71,21 @@ def test_verify_passes(delivery_run):
     assert run_stages(delivery_run, ['score', 'report', 'verify'])
     rep = json.loads((delivery_run.dir / 'verify_report.json').read_text())
     assert rep['ok'] and rep['summary']['score_basis'] == {BASIS_FULL: 1, BASIS_FLOOR: 3}
+
+
+def test_combine_merges_runs_and_verifies(delivery_run, tmp_path):
+    from lagosdata.combine import combine
+    run_stages(delivery_run, ['score'])
+    cfg, areas, path = load_config(ROOT / 'config' / 'combined.yaml')
+    out = delivery_run.dir.parent
+    run = Run.create(cfg, areas, path, run_id='test-combined', out_dir=str(out), echo=False)
+    res = combine(run, [delivery_run])
+    recs = run.read_master()
+    assert res['kept'] == len(recs) == 3                         # the two 'Fixture Mart Lekki' share a name
+    mart = next(r for r in recs if r.name == 'Fixture Mart Lekki')
+    assert mart.score != '' and mart.priority                    # delivery score kept, magazine priority added
+    assert run_stages(run, ['report'])
+    import openpyxl
+    hdr = [c.value for c in openpyxl.load_workbook(run.workbook_path)['MASTER DATABASE'][1]]
+    assert {'Programme', 'Delivery Score', 'Delivery Band'} <= set(hdr)
+    run.close()
