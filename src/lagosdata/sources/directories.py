@@ -139,6 +139,7 @@ BL_ADDR = 'div.company_header div.address'
 BL_PHONE = 'div.cont div.s:has(i.fa-phone) span'
 BL_MARKER = 'div.mapmarker'
 BL_REVIEWS = 'div.company_reviews'
+BL_TAGLINE = 'div.company_header div.tagline'
 
 
 def parse_businesslist(html: str, page_url: str) -> list[dict]:
@@ -151,11 +152,13 @@ def parse_businesslist(html: str, page_url: str) -> list[dict]:
         mk = c.select_one(BL_MARKER)
         ph = c.select_one(BL_PHONE)
         addr = c.select_one(BL_ADDR)
+        tag = c.select_one(BL_TAGLINE)
         out.append({'name': a.get_text(strip=True), 'listing_id': c.get('data-cmpid', ''),
                     'url': urljoin(BL, a['href']),
                     'addr': addr.get_text(' ', strip=True) if addr else '',
                     'phone': ph.get_text(' ', strip=True) if ph else '',
                     'lat': mk.get('data-ltd', '') if mk else '', 'lng': mk.get('data-lng', '') if mk else '',
+                    'desc': tag.get_text(' ', strip=True) if tag else '',
                     'sponsored': bool(c.find('i', string='Sponsored')), 'page': page_url})
     return out
 

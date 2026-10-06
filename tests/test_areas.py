@@ -49,3 +49,12 @@ def test_bbox_covers_all_areas():
 def test_nearest_area_flat_earth():
     name, d, inside = nearest_area(6.55982, 3.36915, {k: REG[k] for k in MAG})
     assert name == 'Anthony / Anthony Village' and d == 0 and inside
+
+
+def test_lekki_epe_polygon_follows_the_expressway():
+    DEL = ['Lekki Phase 1', 'Lekki-Epe Corridor to Ajah', 'Victoria Island', 'Ikoyi', 'Yaba', 'Surulere']
+    assert REG['Lekki-Epe Corridor to Ajah'].polygon
+    assert assign(6.4685, 3.5720, '', DEL, REG)[0] == 'Lekki-Epe Corridor to Ajah'      # Ajah
+    assert assign(6.4370, 3.5320, '', DEL, REG)[0] == 'Lekki-Epe Corridor to Ajah'      # Chevron
+    assert assign(6.4470, 3.4720, '', DEL, REG)[0] == 'Lekki Phase 1'
+    assert assign(6.4700, 3.5300, '', DEL, REG)[0] == OUTSIDE                          # the lagoon

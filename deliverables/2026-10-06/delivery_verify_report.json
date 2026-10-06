@@ -1,0 +1,104 @@
+{
+ "ok": true,
+ "checks": [
+  {
+   "name": "formula errors (LibreOffice recalc)",
+   "ok": true,
+   "detail": "errors_found=0"
+  },
+  {
+   "name": "dashboard KPIs recounted in Python",
+   "ok": true,
+   "detail": "22 KPI rows checked"
+  },
+  {
+   "name": "schema",
+   "ok": true,
+   "detail": "7393 records OK"
+  },
+  {
+   "name": "unclassified < 5%",
+   "ok": true,
+   "detail": "16/7393 = 0.2%"
+  },
+  {
+   "name": "dedupe sanity",
+   "ok": true,
+   "detail": "no shared phone or place_id"
+  },
+  {
+   "name": "row counts agree across tabs",
+   "ok": true,
+   "detail": "{\"master.json\": 7393, \"TARGET LIST\": 7393, \"area_table_total\": 7393}"
+  },
+  {
+   "name": "spot-check sample written",
+   "ok": true,
+   "detail": "10 records in verify_sample.csv - for a human to check against the listing; NOT verified by this tool"
+  }
+ ],
+ "summary": {
+  "records": 7393,
+  "by_source_kind": {
+   "gmaps": 7056,
+   "directory": 502
+  },
+  "by_area": {
+   "Outside catchment": 3827,
+   "Lekki-Epe Corridor to Ajah": 922,
+   "Yaba": 858,
+   "Surulere": 665,
+   "Lekki Phase 1": 402,
+   "Ikoyi": 382,
+   "Victoria Island": 330,
+   "Unassigned": 7
+  },
+  "by_group": {
+   "Retail & Groceries": 1977,
+   "Health & Medical": 1641,
+   "Catering & Events Food": 1414,
+   "Food & Restaurants": 1373,
+   "Baking & Desserts": 429,
+   "Bars & Entertainment": 245,
+   "Professional Services": 57,
+   "Beauty & Personal Care": 56,
+   "Events & Creative Services": 50,
+   "Education & Children": 31,
+   "Printing & Business Services": 19,
+   "Fashion & Clothing": 18,
+   "Other Local Services": 16,
+   "Insurance & Finance": 14,
+   "Phones & Technology": 10,
+   "Logistics & Delivery": 9,
+   "Furniture & Interiors": 8,
+   "Construction & Building": 5,
+   "Real Estate & Property": 4,
+   "Fitness & Wellness": 4,
+   "Religious & Community": 3,
+   "Agriculture & Food Supply": 3,
+   "Laundry & Cleaning": 2,
+   "Automotive": 2,
+   "Hospitality": 1,
+   "Power & Energy": 1,
+   "Security": 1
+  },
+  "contactable": 5137,
+  "enrichment": {
+   "website": 601,
+   "email": 90,
+   "whatsapp": 65,
+   "instagram": 120,
+   "facebook": 60
+  },
+  "score_basis": {
+   "Full": 291,
+   "Floor - not enriched": 7102
+  },
+  "bands": {
+   "Hot - approach first": 19,
+   "Warm - worth a call": 289,
+   "Cool - lower priority": 788,
+   "Cold - little evidence of delivery": 6297
+  }
+ }
+}

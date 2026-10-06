@@ -35,6 +35,7 @@ def delivery_run(tmp_path):
                  source='OpenStreetMap (Oct 2026)'),
         Business(name='Fixture Buka', label='Restaurant', area='Outside catchment', instagram='fixturebuka',
                  delivery_text_signals=['catering'], source='Google Maps (sweep, Oct 2026)'),
+        Business(name='Fixture Chambers', label='Lawyer', area='Yaba', source='Finelib (Oct 2026)'),   # out of scope
     ]
     for r in recs:
         r.sources_all = [r.source]
@@ -53,6 +54,7 @@ def test_scores_and_basis(delivery_run):
     assert top.score_basis == BASIS_FULL and top.band.startswith('Hot')
     assert recs[('Fixture Pharmacy', 'Yaba')].score_basis == BASIS_FLOOR   # never presented as a measurement
     assert recs[('Fixture Buka', 'Outside catchment')].score_components['Catering offered'] == 15
+    assert ('Fixture Chambers', 'Yaba') not in recs                  # not a food / grocery / pharmacy prospect
 
 
 def test_workbook_has_every_component_column(delivery_run):

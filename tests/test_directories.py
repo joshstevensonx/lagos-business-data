@@ -52,3 +52,31 @@ def test_finelib_crawl_and_mapping(magazine_run):
     b = src.to_business(rows[1])
     assert b.source.startswith('Finelib (') and b.phone == '+2348053072221' and b.phones_all.count(';') == 2
     assert b.lat == '' and b.verification == ''    # no coordinates: geo falls back to the area named in the address
+
+
+def test_businesslist_tagline_and_directory_classification(magazine_run):
+    from lagosdata.classify import classify
+    p2 = parse_businesslist((FIX / 'businesslist-p2-2026-10-06.html').read_text(), 'p2')
+    assert sum(1 for r in p2 if r['desc']) >= 10
+    from lagosdata.stages.classify import classify as classify_stage
+    src = DirectoriesSource(magazine_run)
+    rows = [{**r, '_site': 'businesslist', '_fetched': '2026-10-06'} for r in p2]
+    bs = [src.to_business(r) for r in rows]
+    for b in bs:
+        b.area = 'Outside catchment'
+    magazine_run.write_stage('geo', bs)
+    classify_stage(magazine_run)
+    out = magazine_run.read_stage('classify')
+    with_label_only = sum(1 for b in bs if classify(b.label, b.name)[1] != 'Unclassified (needs review)')
+    assert sum(1 for b in out if b.sub != 'Unclassified (needs review)') > with_label_only
+
+
+def test_recrawled_listing_supersedes_old_raw_row(magazine_run):
+    from lagosdata.stages.geo import geo
+    magazine_run.append_raw('directories', [
+        {'name': 'Old Name Ltd', 'listing_id': '9', '_site': 'businesslist', '_fetched': '2026-10-06', 'addr': 'Yaba'},
+        {'name': 'New Name Ltd', 'listing_id': '9', '_site': 'businesslist', '_fetched': '2026-10-06', 'addr': 'Yaba',
+         'desc': 'Phone repairs'}])
+    geo(magazine_run)
+    names = [b.name for b in magazine_run.read_stage('geo')]
+    assert names == ['New Name Ltd']

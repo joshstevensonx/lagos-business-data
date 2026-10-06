@@ -21,6 +21,12 @@ def score(run) -> dict:
             b.band = S.band(total)
             # only an enricher that actually checked the place page may claim a full basis
             b.score_basis = S.BASIS_FULL if b.score_basis == S.BASIS_FULL else S.BASIS_FLOOR
+        if run.cfg.delivery_scoring.in_scope_only:
+            before = len(recs)
+            recs = [r for r in recs if r.delivery_category != 'Other']
+            out['out_of_scope_dropped'] = before - len(recs)
+            run.log.event('stage', f'score: dropped {before - len(recs)} records that are not restaurants/food, '
+                          'supermarkets/groceries or pharmacies (directories list every category)')
         recs.sort(key=lambda r: (-r.score, r.area, r.name.lower()))
         out['bands'] = dict(collections.Counter(r.band for r in recs))
         out['basis'] = dict(collections.Counter(r.score_basis for r in recs))

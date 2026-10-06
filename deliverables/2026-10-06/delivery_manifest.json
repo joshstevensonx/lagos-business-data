@@ -1,0 +1,116 @@
+{
+  "run_id": "2026-10-06-delivery",
+  "created_at": "2026-10-06T18:40:53+00:00",
+  "updated_at": "2026-10-06T19:59:27+00:00",
+  "pipeline": "delivery",
+  "versions": {
+    "lagosdata": "0.1.0",
+    "python": "3.13.16"
+  },
+  "discover": {
+    "searched": 172,
+    "skipped_done": 104,
+    "failed": 0,
+    "raw_rows": 19460,
+    "sources_not_built": [],
+    "aborted": []
+  },
+  "timings": {
+    "discover": 2306.1,
+    "geo": 3.69,
+    "classify": 5.67,
+    "dedupe": 4.27,
+    "enrich": 1023.53,
+    "score": 1.5,
+    "report": 12.33,
+    "verify": 9.96
+  },
+  "geo": {
+    "records": 36995,
+    "Unassigned": 252,
+    "Lekki Phase 1": 2130,
+    "Ikoyi": 2634,
+    "Victoria Island": 1956,
+    "Lekki-Epe Corridor to Ajah": 5130,
+    "Surulere": 3246,
+    "Yaba": 3674,
+    "Outside catchment": 17973
+  },
+  "classify": {
+    "records": 36995,
+    "unclassified": 1154
+  },
+  "dedupe": {
+    "in": 36995,
+    "merged": 23367,
+    "poi_dropped": 0,
+    "kept": 13622,
+    "conflicts": 1449
+  },
+  "robots_skips": {
+    "site_contacts": [
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://linktr.ee/big_spoon_catering",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://linktr.ee/Adellastaste",
+      "https://linktr.ee/BasiliKitchen",
+      "https://linktr.ee/Dvivres",
+      "https://linktr.ee/oppysfood",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://api.whatsapp.com/contact",
+      "https://api.whatsapp.com/contact-us",
+      "https://api.whatsapp.com/about",
+      "https://api.whatsapp.com/order",
+      "https://api.whatsapp.com/delivery",
+      "https://www.instagram.com/contact",
+      "https://www.instagram.com/contact-us",
+      "https://www.instagram.com/about",
+      "https://www.instagram.com/order",
+      "https://www.instagram.com/delivery",
+      "https://chubbycheekscuisine.catalog.to/w/chubby-cheeks-cuisine-/7r1",
+      "https://renaxis-pharma-limited.onrender.com/"
+    ]
+  },
+  "enrich": {
+    "records": 13622,
+    "ran": [
+      "site_contacts",
+      "place_pages"
+    ],
+    "not_built": []
+  },
+  "score": {
+    "records": 13622,
+    "out_of_scope_dropped": 6229,
+    "bands": {
+      "Hot - approach first": 19,
+      "Warm - worth a call": 289,
+      "Cool - lower priority": 788,
+      "Cold - little evidence of delivery": 6297
+    },
+    "basis": {
+      "Full": 291,
+      "Floor - not enriched": 7102
+    }
+  },
+  "report": {
+    "workbook": "out/2026-10-06-delivery/Lagos_Delivery_Prospects_v2.xlsx",
+    "rows": 7393
+  },
+  "verify": {
+    "ok": true,
+    "failed": []
+  }
+}

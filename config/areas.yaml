@@ -1,20 +1,123 @@
 # Shared area registry. Centroids are DERIVED, never guessed (SPEC §4.1): the median
-# position of businesses whose address explicitly names the area.
-# One geometry per area: lat/lng/radius_km, corridor {from, to, width_km}, or polygon [[lat, lng], ...].
+# position of businesses whose address explicitly names the area. Rewritten by
+# `lagosdata derive-centroids --write`.
 areas:
-  "Anthony / Anthony Village": { lat: 6.55982, lng: 3.36915, radius_km: 1.30, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Maryland / Mende":          { lat: 6.57229, lng: 3.36717, radius_km: 1.30, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Ilupeju":                   { lat: 6.54548, lng: 3.35989, radius_km: 1.40, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Gbagada":                   { lat: 6.55144, lng: 3.38653, radius_km: 1.60, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Obanikoro":                 { lat: 6.54773, lng: 3.36824, radius_km: 1.00, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Palmgrove":                 { lat: 6.53952, lng: 3.36767, radius_km: 1.00, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  "Ojota":                     { lat: 6.58282, lng: 3.38447, radius_km: 1.40, derived_from: "Sep 2026 sweep (531 address-named records across 7 areas)" }
-  # Delivery-pipeline areas: no centroids yet - `derive-centroids` fills these on first run.
-  # Until then records are matched to them only by area name or alias in the address.
-  # Aliases are neighbourhood names along each area - unconfirmed, Josh to check.
-  "Lekki Phase 1":              { aliases: ["Lekki Phase One", "Lekki Ph 1"] }
-  "Lekki-Epe Corridor to Ajah": { aliases: ["Ajah", "Sangotedo", "Abraham Adesanya", "Chevron", "Ikota", "Osapa", "Agungi", "Jakande", "Lekki-Epe", "Lekki Epe"] }
-  "Victoria Island":            { aliases: ["Victoria Island Annex"] }
-  "Ikoyi":                      { aliases: [] }
-  "Yaba":                       { aliases: ["Sabo", "Akoka", "Onike"] }
-  "Surulere":                   { aliases: ["Aguda", "Ojuelegba", "Bode Thomas", "Adeniran Ogunsanya"] }
+  Anthony / Anthony Village:
+    lat: 6.55982
+    lng: 3.36915
+    radius_km: 1.3
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Maryland / Mende:
+    lat: 6.57229
+    lng: 3.36717
+    radius_km: 1.3
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Ilupeju:
+    lat: 6.54548
+    lng: 3.35989
+    radius_km: 1.4
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Gbagada:
+    lat: 6.55144
+    lng: 3.38653
+    radius_km: 1.6
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Obanikoro:
+    lat: 6.54773
+    lng: 3.36824
+    radius_km: 1.0
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Palmgrove:
+    lat: 6.53952
+    lng: 3.36767
+    radius_km: 1.0
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Ojota:
+    lat: 6.58282
+    lng: 3.38447
+    radius_km: 1.4
+    derived_from: Sep 2026 sweep (531 address-named records across 7 areas)
+  Lekki Phase 1:
+    aliases:
+    - Lekki Phase One
+    - Lekki Ph 1
+    lat: 6.44514
+    lng: 3.47071
+    radius_km: 1.8
+    derived_from: 155 records, run 2026-10-06-delivery, 2026-10-06; radius 1.8 km is a judgement for these larger districts
+    low_confidence: false
+  Lekki-Epe Corridor to Ajah:
+    aliases:
+    - Ajah
+    - Sangotedo
+    - Abraham Adesanya
+    - Chevron
+    - Ikota
+    - Osapa
+    - Agungi
+    - Jakande
+    - Lekki-Epe
+    - Lekki Epe
+    derived_from: 'DRAWN (polygon, ~1.5 km either side of the road) along the Lekki-Epe Expressway from east of Lekki Phase 1 to Ajah (a strip, not a disc - SPEC §4.1); address-median check: 946 records,
+      run 2026-10-06-delivery, 2026-10-06; centre 6.45351,3.54435 lies on it'
+    polygon:
+    - - 6.4505
+      - 3.495
+    - - 6.4505
+      - 3.53
+    - - 6.4575
+      - 3.55
+    - - 6.4675
+      - 3.56
+    - - 6.4805
+      - 3.575
+    - - 6.4835
+      - 3.585
+    - - 6.4565
+      - 3.585
+    - - 6.4535
+      - 3.575
+    - - 6.4405
+      - 3.56
+    - - 6.4305
+      - 3.55
+    - - 6.4235
+      - 3.53
+    - - 6.4235
+      - 3.495
+  Victoria Island:
+    aliases:
+    - Victoria Island Annex
+    lat: 6.43121
+    lng: 3.42567
+    radius_km: 1.8
+    derived_from: 181 records, run 2026-10-06-delivery, 2026-10-06; radius 1.8 km is a judgement for these larger districts
+    low_confidence: false
+  Ikoyi:
+    aliases: []
+    lat: 6.44986
+    lng: 3.41929
+    radius_km: 1.8
+    derived_from: 145 records, run 2026-10-06-delivery, 2026-10-06; radius 1.8 km is a judgement for these larger districts
+    low_confidence: false
+  Yaba:
+    aliases:
+    - Sabo
+    - Akoka
+    - Onike
+    lat: 6.50837
+    lng: 3.37916
+    radius_km: 1.8
+    derived_from: 247 records, run 2026-10-06-delivery, 2026-10-06; radius 1.8 km is a judgement for these larger districts
+    low_confidence: false
+  Surulere:
+    aliases:
+    - Aguda
+    - Ojuelegba
+    - Bode Thomas
+    - Adeniran Ogunsanya
+    lat: 6.49605
+    lng: 3.35644
+    radius_km: 1.8
+    derived_from: 482 records, run 2026-10-06-delivery, 2026-10-06; radius 1.8 km is a judgement for these larger districts
+    low_confidence: false

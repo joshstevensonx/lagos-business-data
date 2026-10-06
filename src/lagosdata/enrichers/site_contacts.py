@@ -225,9 +225,10 @@ def apply(b, found: dict, used_phones: set):
 
 def enrich(run, recs):
     cfg = run.cfg.sources.site_contacts
-    from ..record import CORE_ZONE, count_channels
+    from ..record import CORE_ZONE, RING_ZONE, count_channels
     targets = [b for b in recs if b.website]
-    targets.sort(key=lambda b: (b.zone != CORE_ZONE, -(b.reviews if isinstance(b.reviews, int) else 0)))
+    rank = {CORE_ZONE: 0, RING_ZONE: 1}           # catchment first; out-of-catchment leads last
+    targets.sort(key=lambda b: (rank.get(b.zone, 2), -(b.reviews if isinstance(b.reviews, int) else 0)))
     targets = targets[:cfg.max_sites]
     fetcher = Fetcher(run.dir / 'cache' / 'sites', run.cfg.sources.directories.contact_email, run.log)
     by_host: dict[str, list] = {}

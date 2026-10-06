@@ -19,6 +19,13 @@ def geo(run) -> dict:
         if not rows:
             continue
         src = make_source(run, name)
+        # a re-crawled directory listing supersedes its earlier raw row (raw stays append-only)
+        latest = {}
+        for i, raw in enumerate(rows):
+            if raw.get('_site') and raw.get('listing_id'):
+                latest[(raw['_site'], raw['listing_id'])] = i
+        rows = [raw for i, raw in enumerate(rows)
+                if not (raw.get('_site') and raw.get('listing_id')) or latest[(raw['_site'], raw['listing_id'])] == i]
         for raw in rows:
             b = src.to_business(raw)
             if b is None:

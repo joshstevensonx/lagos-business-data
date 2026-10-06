@@ -13,6 +13,7 @@ as online ordering, never as Google's own delivery flag.
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import random
 import re
@@ -153,21 +154,57 @@ async def _visit_all(run, targets, executable_path, conc, delay):
     return results
 
 
+def _key(b) -> str:
+    m = re.search(r'!1s(0x[0-9a-f]+:0x[0-9a-f]+)', b.maps or '')
+    return b.place_id or (m.group(1) if m else b.maps.split('?')[0])
+
+
+def _load_cache(path) -> dict:
+    out = {}
+    if path.exists():
+        for line in path.read_text(encoding='utf-8').splitlines():
+            if line.strip():
+                d = json.loads(line)
+                out[d['key']] = d['parsed']
+    return out
+
+
 def enrich(run, recs):
+    """Visit place pages not yet in the run's cache (derived stages are rebuilt from raw, so
+    visit results persist in cache/place_pages.jsonl like raw data), then apply every cached
+    result. A re-run revisits nothing."""
     cfg = run.cfg.enrich.place_pages
     g = run.cfg.sources.gmaps_browser
-    cand = [b for b in recs if b.maps.startswith('https://www.google.com/maps/place/')
-            and b.score_basis != BASIS_FULL]
+    cache_path = run.dir / 'cache' / 'place_pages.jsonl'
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache = _load_cache(cache_path)
+    from .. import score as S
+    from ..record import OUTSIDE, UNASSIGNED
+    cand = [b for b in recs if b.maps.startswith('https://www.google.com/maps/place/') and _key(b) not in cache
+            # the budget goes to in-scope prospects inside the catchment
+            and S.category_of(S.apify_view(b)) != 'Other' and b.area not in (OUTSIDE, UNASSIGNED)]
     # reviews_desc: review counts come from the feed (missing on some cards - those go last)
     cand.sort(key=lambda b: -(b.reviews if isinstance(b.reviews, int) else -1))
-    targets = cand[:cfg.max_place_visits]
-    if not targets:
-        return recs
-    results = asyncio.run(_visit_all(run, targets, os.environ.get('LAGOSDATA_CHROMIUM'),
-                                     g.concurrency if not run.options.get('place_concurrency')
-                                     else run.options['place_concurrency'], tuple(g.delay_seconds)))
+    budget = max(0, cfg.max_place_visits - len(cache))
+    targets = cand[:budget]
+    results = {}
+    if targets:
+        results = asyncio.run(_visit_all(run, targets, os.environ.get('LAGOSDATA_CHROMIUM'),
+                                         run.options.get('place_concurrency') or g.concurrency,
+                                         tuple(g.delay_seconds)))
+        with open(cache_path, 'a', encoding='utf-8') as fh:
+            for b in targets:
+                if id(b) in results:
+                    cache[_key(b)] = results[id(b)]
+                    fh.write(json.dumps({'key': _key(b), 'name': b.name, 'parsed': results[id(b)]},
+                                        ensure_ascii=False) + '\n')
     used = {b.phone for b in recs if b.phone}
-    for b in targets:
-        if id(b) in results:
-            apply(b, results[id(b)], used)
+    applied = 0
+    for b in recs:
+        p = cache.get(_key(b))
+        if p is not None:
+            apply(b, p, used)
+            applied += 1
+    run.log.event('stage', f'place_pages: {applied} records have a checked place page '
+                  f'({len(results)} of {len(targets)} planned visits completed this run, budget {cfg.max_place_visits})')
     return recs
