@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lagosdata"
+version = "0.1.0"
+description = "Free-source Lagos local business data collector (magazine census + delivery prospecting)"
+requires-python = ">=3.10"
+dependencies = [
+    "openpyxl>=3.1",
+    "pydantic>=2.5",
+    "PyYAML>=6.0",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+browser = ["playwright>=1.40"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+lagosdata = "lagosdata.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

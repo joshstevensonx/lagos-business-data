@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+"""Client's full category tree: 30 groups -> subcategories, plus the Google Maps
+search terms that collectively cover each group."""
+
+TREE = {
+"Retail & Groceries": dict(subs=["Provision Stores","Mini-Marts","Supermarkets","Convenience Stores","Frozen Food Shops","Meat Shops","Fish Sellers","Fruit & Vegetable Sellers","Wine & Drinks Shops","Water Sellers","Household Goods Shops","Cosmetics Shops","Baby Product Shops","Stationery Shops","Pet Shops","Pet Food & Accessories"],
+  terms=["provision store","mini mart","supermarket","convenience store","frozen food shop","butcher meat shop","fish seller","fruit and vegetable shop","wine shop","drinks store","water seller","household goods store","cosmetics shop","baby products store","stationery shop","pet shop","pet food store"]),
+"Fashion & Clothing": dict(subs=["Boutiques","Fashion Designers","Tailors","Alteration Services","Traditional Wear Designers","Bridal Wear","Men's Fashion","Children's Clothing","Shoe Shops","Handbag Shops","Jewellery Shops","Fashion Accessories","Fabric Shops","Lace/Fabric Sellers","Thrift/Pre-Owned Clothing","Wig Vendors","Wig Makers","Shoe Repairers"],
+  terms=["boutique","fashion designer","tailor","clothing alteration","traditional wear","bridal shop","men's clothing store","children's clothing store","shoe store","handbag store","jewelry store","fashion accessories","fabric store","lace shop","thrift store","wig shop","shoe repair"]),
+"Phones & Technology": dict(subs=["Phone Shops","Phone Accessories","Phone Repairers","Screen Replacement","Laptop Repairers","Computer Shops","Computer Accessories","Electronics Shops","Electronics Repairers","CCTV Installers","Networking Services","IT Support","Software Services","Satellite/Decoder Installers","POS Operators","ATM Services","Technology Consultants"],
+  terms=["phone shop","phone accessories","phone repair","laptop repair","computer store","computer accessories","electronics store","electronics repair","cctv installation","network services","IT support","software company","satellite dish installation","POS agent","atm"]),
+"Printing & Business Services": dict(subs=["Printers","Digital Printing","Large-Format Printing","Business Centres","Photocopying","Typing Services","Lamination","Binding Services","Graphic Designers","Signage & Branding","Stamp Makers","Embroidery & Branding","Document Services","Secretarial Services"],
+  terms=["printing press","digital printing","large format printing","business centre","photocopy service","graphic designer","signage company","rubber stamp maker","embroidery services","secretarial services"]),
+"Food & Restaurants": dict(subs=["Restaurants","Buka","Canteens","Food Vendors","Shawarma","Suya","Grills","Fast Food","Pizza Outlets","Burger Outlets","Chicken Shops","Seafood Restaurants","Chinese/Asian Restaurants","Nigerian Restaurants","Breakfast Outlets","Cafes","Coffee Shops","Food Delivery Businesses","Meal Delivery Businesses","Home-Based Food Businesses"],
+  terms=["restaurant","buka","canteen","food vendor","shawarma","suya spot","grill house","fast food","pizza","burger","chicken restaurant","seafood restaurant","chinese restaurant","nigerian restaurant","breakfast restaurant","cafe","coffee shop","food delivery"]),
+"Baking & Desserts": dict(subs=["Bakeries","Cake Makers","Custom Cake Businesses","Cupcake Businesses","Pastry Shops","Small-Chops Vendors","Dessert Businesses","Ice Cream Shops","Yoghurt Shops","Confectionery","Bread Sellers"],
+  terms=["bakery","cake shop","cupcake shop","pastry shop","small chops","dessert shop","ice cream shop","yoghurt shop","confectionery","bread seller"]),
+"Catering & Events Food": dict(subs=["Caterers","Private Chefs","Outdoor Catering","Event Food Vendors","Drinks Vendors","Cocktail Vendors","Mobile Food Vendors","Corporate Catering","Home-Based Caterers","Meal Preparation Services"],
+  terms=["caterer","private chef","outdoor catering","cocktail bartender service","meal prep service"]),
+"Bars & Entertainment": dict(subs=["Bars","Lounges","Pubs","Beer Parlours","Sports Bars","Clubs","Karaoke","Gaming Centres","Entertainment Centres","Viewing Centres","Pool/Snooker Centres","Recreation Centres"],
+  terms=["bar","lounge","pub","beer parlour","sports bar","night club","karaoke bar","gaming centre","viewing centre","snooker pool club","recreation centre"]),
+"Beauty & Personal Care": dict(subs=["Hair Salons","Barbers","Braiders","Wig Makers","Nail Technicians","Manicure Services","Pedicure Services","Makeup Artists","Lash Technicians","Brow Specialists","Skincare Businesses","Facial Services","Waxing Services","Massage Services","Spas","Beauty Product Retailers","Mobile Beauty Services","Home-Based Salons"],
+  terms=["hair salon","barber shop","hair braiding","nail salon","makeup artist","eyelash extensions","eyebrow threading","skin care clinic","waxing salon","massage therapist","spa","beauty supply store"]),
+"Health & Medical": dict(subs=["Pharmacies","Patent Medicine Stores","Clinics","Hospitals","Laboratories","Diagnostic Centres","Dental Clinics","Dentists","Optical Shops","Opticians","Physiotherapy","Medical Equipment Suppliers","Home-Care Services","Maternity Services","Medical Consultants","Home Nursing Services"],
+  terms=["pharmacy","patent medicine store","medical clinic","hospital","medical laboratory","diagnostic centre","dental clinic","optician eye clinic","physiotherapy clinic","medical equipment supplier","home care service","maternity hospital"]),
+"Fitness & Wellness": dict(subs=["Gyms","Fitness Centres","Personal Trainers","Fitness Instructors","Yoga","Pilates","Dance Studios","Martial Arts","Sports Coaching","Wellness Centres","Nutrition/Diet Services","Weight Management Services","Fitness Classes"],
+  terms=["gym","fitness centre","personal trainer","yoga studio","pilates studio","dance studio","martial arts school","sports club","wellness centre","nutritionist"]),
+"Education & Children": dict(subs=["Nursery Schools","Primary Schools","Secondary Schools","Daycare Centres","Creches","Montessori Schools","Tutoring Centres","Private Tutors","Home Tutors","Lesson Centres","Exam Preparation Centres","Music Schools","Dance Schools","Vocational Training","Computer Training","Skills Training","Children's Activity Centres"],
+  terms=["nursery school","primary school","secondary school","daycare","creche","montessori school","tutorial centre","lesson teacher","music school","vocational training centre","computer training school","children's activity centre"]),
+"Religious & Community": dict(subs=["Churches","Mosques","Ministries","Fellowship Centres","Religious Bookshops","Community Associations","Residents' Associations","Social Clubs","Youth Organisations","Community Centres","Event/Community Halls"],
+  terms=["church","mosque","ministry","christian bookshop","community centre","social club","town hall"]),
+"Events & Creative Services": dict(subs=["Event Planners","Event Managers","Event Decorators","Balloon Decorators","Event Rental Companies","Chair & Table Rentals","Canopy Rentals","Event Lighting","Sound System Providers","DJs","MCs","Photographers","Videographers","Photo Studios","Invitation/Card Printers","Souvenir Vendors","Gift Shops","Event Florists","Event Makeup Artists","Event Caterers"],
+  terms=["event planner","event decorator","balloon decoration","event rentals","chair rental","canopy rental","sound system rental","disc jockey","photographer","videographer","photo studio","invitation cards","souvenir shop","gift shop","florist"]),
+"Real Estate & Property": dict(subs=["Realtors","Estate Agents","Property Managers","Facility Managers","Property Developers","Valuation Firms","Estate Surveyors","Estate Consultants","Shortlet Managers","Shortlet Operators","Serviced Apartments","Property Marketing Companies","Property Letting Agents","Property Investment Companies","Building Management Services"],
+  terms=["real estate agency","estate agent","property management company","facility management","property developer","estate surveyor valuer","shortlet apartment","serviced apartment","property investment company"]),
+"Professional Services": dict(subs=["Lawyers","Law Chambers","Accountants","Auditors","Tax Consultants","Business Consultants","Management Consultants","HR Consultants","Recruitment Agencies","Architects","Engineers","Quantity Surveyors","Surveyors","Marketing Consultants","Public Relations Consultants","Training Consultants","Legal Consultants","Secretarial Services"],
+  terms=["lawyer","law firm","accountant","auditing firm","tax consultant","business consultant","human resource consultant","recruitment agency","architect","engineering company","quantity surveyor","marketing consultant","public relations agency","training institute"]),
+"Insurance & Finance": dict(subs=["Insurance Companies","Insurance Brokers","Insurance Agents","Claims Consultants","Microfinance Banks","Cooperative Societies","Loan/Credit Businesses","Financial Advisers","Investment Advisers","Pension Consultants","Mortgage Consultants","Fintech Agents","POS Agents","Banking Agents","Bureau de Change"],
+  terms=["insurance company","insurance broker","microfinance bank","cooperative society","loan company","financial adviser","investment company","pension fund administrator","mortgage bank","bureau de change","bank"]),
+"Logistics & Delivery": dict(subs=["Logistics Companies","Dispatch Companies","Dispatch Riders","Courier Services","Bike Dispatch Operators","Haulage Companies","Moving Companies","Relocation Services","Pickup/Drop-Off Points","E-Commerce Fulfilment","Delivery Services","Errand Services","Personal Shopper Services"],
+  terms=["logistics company","dispatch rider","courier service","haulage company","moving company","delivery service","errand service"]),
+"Laundry & Cleaning": dict(subs=["Laundry Businesses","Dry Cleaners","Ironing Services","Shoe Cleaning","Bag Cleaning","Carpet Cleaning","Upholstery Cleaning","Residential Cleaning","Office Cleaning","Commercial Cleaning","Post-Construction Cleaning","Laundry Pickup & Delivery"],
+  terms=["laundry service","dry cleaner","carpet cleaning","upholstery cleaning","cleaning company","office cleaning","shoe cleaning"]),
+"Automotive": dict(subs=["Mechanics","Auto Electricians","Panel Beaters","Spray Painters","Tyre Dealers","Vulcanisers","Wheel Alignment","Wheel Balancing","Spare Parts Dealers","Battery Dealers","Auto AC Services","Car Diagnostics","Car Accessories","Car Detailing","Car Wash","Mobile Mechanics","Motorcycle Repairers","Motorcycle Parts","Car Rental Services"],
+  terms=["auto mechanic","auto electrician","panel beater","spray painting cars","tyre shop","vulcanizer","wheel alignment","auto spare parts","car battery shop","auto air conditioning","car diagnostics","car accessories shop","car detailing","car wash","motorcycle repair","car rental"]),
+"Construction & Building": dict(subs=["Building Contractors","Civil Contractors","Plumbers","Electricians","Welders","Aluminium Fabricators","Glass Installers","Tilers","Painters","POP Installers","Roofing Contractors","Waterproofing Services","Flooring Contractors","Roofing Material Suppliers","Building Material Shops","Steel Fabricators","Iron Benders","Brick/Block Suppliers","Kitchen Installers","Wardrobe Installers"],
+  terms=["building contractor","civil engineering contractor","plumber","electrician","welder","aluminium fabrication","glass installation","tiler","painter","POP ceiling","roofing company","waterproofing","flooring contractor","building materials shop","steel fabrication","block industry"]),
+"Power & Energy": dict(subs=["Generator Dealers","Generator Repairers","Generator Servicing","Solar Installers","Solar Equipment Suppliers","Inverter Suppliers","Battery Dealers","Solar Accessories","Electrical Contractors","Energy Consultants","Diesel/Fuel Suppliers","Generator Technicians","Inverter Technicians"],
+  terms=["generator dealer","generator repair","solar installation","solar equipment supplier","inverter shop","electrical contractor","diesel supplier"]),
+"Furniture & Interiors": dict(subs=["Furniture Shops","Furniture Makers","Carpenters","Upholsterers","Mattress Shops","Kitchen Cabinet Makers","Wardrobe Makers","Office Furniture","Blinds Suppliers","Curtain Suppliers","Curtain Makers","Interior Designers","Interior Decorators","Wallpaper Installers","Flooring Suppliers","Home Decor Shops","Lighting Shops","Kitchen Equipment Suppliers"],
+  terms=["furniture store","furniture maker","carpenter","upholstery workshop","mattress shop","kitchen cabinet","wardrobe maker","office furniture","window blinds","curtain shop","interior designer","wallpaper","home decor store","lighting store","kitchen equipment"]),
+"Home Services": dict(subs=["Plumbing Services","Electrical Services","Handyman Services","AC Installation","AC Repair","Refrigeration Services","Generator Repair","Appliance Repair","Locksmiths","Pest Control","Fumigation","Cleaning Services","Water Treatment","Borehole Services","Water Tank Cleaning","Water Tank Suppliers","Home Maintenance Services","Home Appliance Technicians","Domestic Staff Agencies","Nanny Services","Home Nursing","Elderly Care Services"],
+  terms=["handyman","air conditioning installation","air conditioner repair","refrigeration services","appliance repair","locksmith","pest control","fumigation services","water treatment","borehole drilling","water tank supplier","domestic staff agency","nanny agency","elderly care"]),
+"Security": dict(subs=["Security Companies","Private Security Guards","CCTV Installers","Alarm Systems","Access Control","Security Equipment Suppliers","Gate Automation","Electric Fence Installers","Locksmiths","Security Consultants"],
+  terms=["security company","security guard service","alarm system","access control","security equipment","gate automation","electric fence"]),
+"Hospitality": dict(subs=["Hotels","Guest Houses","Lodges","Shortlets","Serviced Apartments","Airbnb Operators","Apartment Hotels","Event Centres","Conference Centres","Meeting/Training Facilities"],
+  terms=["hotel","guest house","lodge","apartment hotel","event centre","conference centre","meeting room"]),
+"Water & Utilities": dict(subs=["Sachet Water Producers","Bottled Water Producers","Water Delivery","Water Treatment","Borehole Drilling","Borehole Maintenance","Water Tank Suppliers","Water Purification","Plumbing Suppliers"],
+  terms=["sachet water factory","bottled water company","water delivery","water purification","plumbing materials shop"]),
+"Agriculture & Food Supply": dict(subs=["Poultry Feed Sellers","Livestock Suppliers","Fish Sellers","Agricultural Input Dealers","Animal Feed Suppliers","Pet Food Suppliers","Veterinary Services","Pet Grooming","Dog Training","Pet Boarding"],
+  terms=["poultry feed","livestock supplier","agricultural inputs","animal feed store","veterinary clinic","pet grooming","dog trainer"]),
+"Other Local Services": dict(subs=["Personal Shoppers","Errand Services","Domestic Staff Agencies","Nanny Services","Home Care Services","Mobile Service Providers","Repair Services","Key Cutting","Shoe Repair","Watch Repair","Tailors","Alteration Services","Gift Shops","Florists","Printing Services","Sign Makers","Advertising Agencies","Marketing Agencies","Branding Companies"],
+  terms=["key cutting","watch repair","repair service","sign maker","advertising agency","marketing agency","branding company","personal shopper"]),
+}
+
+ALL_TERMS = []
+seen=set()
+for g,d in TREE.items():
+    for t in d['terms']:
+        if t.lower() not in seen:
+            seen.add(t.lower()); ALL_TERMS.append(t)
+
+GROUPS = list(TREE.keys())
+ALL_SUBS = [(g,s) for g,d in TREE.items() for s in d['subs']]
+
+if __name__ == '__main__':
+    print('groups:', len(TREE))
+    print('subcategories:', len(ALL_SUBS))
+    print('unique search terms:', len(ALL_TERMS))
