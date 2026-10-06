@@ -150,6 +150,7 @@ def enrich(run, recs, http=requests, budget: Budget | None = None):
                                                               'websiteUri', 'userRatingCount', 'rating')}
                 cache[places_id(b.maps)] = d
                 fh.write(json.dumps({'key': places_id(b.maps), 'name': b.name, 'data': d}, ensure_ascii=False) + '\n')
+                fh.flush()                      # a paid call is never lost to a container restart
                 called += 1
     used = {b.phone for b in recs if b.phone}
     applied = 0
