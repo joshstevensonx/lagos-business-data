@@ -74,7 +74,6 @@ def test_verify_passes(delivery_run):
 
 
 def test_combine_merges_runs_and_verifies(delivery_run, tmp_path):
-    from lagosdata.cli import main
     from lagosdata.combine import combine
     run_stages(delivery_run, ['score'])
     cfg, areas, path = load_config(ROOT / 'config' / 'combined.yaml')
