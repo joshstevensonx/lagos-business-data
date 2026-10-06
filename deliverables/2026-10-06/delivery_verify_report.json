@@ -14,22 +14,22 @@
   {
    "name": "schema",
    "ok": true,
-   "detail": "7393 records OK"
+   "detail": "8459 records OK"
   },
   {
    "name": "unclassified < 5%",
    "ok": true,
-   "detail": "16/7393 = 0.2%"
+   "detail": "19/8459 = 0.2%"
   },
   {
    "name": "dedupe sanity",
    "ok": true,
-   "detail": "no shared phone or place_id"
+   "detail": "no duplicate phone or place_id; 2 phone(s) shared by distinct Google places (branches/one owner), kept separate: ['+2348094220174', '+2349075083171']"
   },
   {
    "name": "row counts agree across tabs",
    "ok": true,
-   "detail": "{\"master.json\": 7393, \"TARGET LIST\": 7393, \"area_table_total\": 7393}"
+   "detail": "{\"master.json\": 8459, \"TARGET LIST\": 8459, \"area_table_total\": 8459}"
   },
   {
    "name": "spot-check sample written",
@@ -38,67 +38,69 @@
   }
  ],
  "summary": {
-  "records": 7393,
+  "records": 8459,
   "by_source_kind": {
-   "gmaps": 7056,
-   "directory": 502
+   "gmaps": 8129,
+   "directory": 506,
+   "places_api": 243
   },
   "by_area": {
-   "Outside catchment": 3827,
-   "Lekki-Epe Corridor to Ajah": 922,
-   "Yaba": 858,
-   "Surulere": 665,
-   "Lekki Phase 1": 402,
-   "Ikoyi": 382,
-   "Victoria Island": 330,
+   "Outside catchment": 4533,
+   "Lekki-Epe Corridor to Ajah": 1127,
+   "Yaba": 905,
+   "Surulere": 730,
+   "Lekki Phase 1": 433,
+   "Ikoyi": 391,
+   "Victoria Island": 333,
    "Unassigned": 7
   },
   "by_group": {
-   "Retail & Groceries": 1977,
-   "Health & Medical": 1641,
-   "Catering & Events Food": 1414,
-   "Food & Restaurants": 1373,
-   "Baking & Desserts": 429,
-   "Bars & Entertainment": 245,
+   "Retail & Groceries": 2518,
+   "Health & Medical": 1923,
+   "Food & Restaurants": 1510,
+   "Catering & Events Food": 1445,
+   "Baking & Desserts": 449,
+   "Bars & Entertainment": 253,
+   "Beauty & Personal Care": 64,
    "Professional Services": 57,
-   "Beauty & Personal Care": 56,
-   "Events & Creative Services": 50,
+   "Events & Creative Services": 51,
    "Education & Children": 31,
-   "Printing & Business Services": 19,
-   "Fashion & Clothing": 18,
-   "Other Local Services": 16,
-   "Insurance & Finance": 14,
-   "Phones & Technology": 10,
-   "Logistics & Delivery": 9,
-   "Furniture & Interiors": 8,
-   "Construction & Building": 5,
-   "Real Estate & Property": 4,
+   "Fashion & Clothing": 26,
+   "Insurance & Finance": 20,
+   "Printing & Business Services": 20,
+   "Other Local Services": 19,
+   "Furniture & Interiors": 13,
+   "Logistics & Delivery": 11,
+   "Phones & Technology": 11,
+   "Construction & Building": 6,
+   "Agriculture & Food Supply": 6,
+   "Real Estate & Property": 5,
+   "Automotive": 4,
    "Fitness & Wellness": 4,
    "Religious & Community": 3,
-   "Agriculture & Food Supply": 3,
+   "Power & Energy": 3,
+   "Home Services": 3,
    "Laundry & Cleaning": 2,
-   "Automotive": 2,
    "Hospitality": 1,
-   "Power & Energy": 1,
    "Security": 1
   },
-  "contactable": 5137,
+  "contactable": 5976,
   "enrichment": {
-   "website": 601,
-   "email": 90,
-   "whatsapp": 65,
-   "instagram": 120,
-   "facebook": 60
+   "website": 713,
+   "email": 98,
+   "whatsapp": 69,
+   "instagram": 136,
+   "facebook": 68
   },
   "score_basis": {
-   "Full": 291,
-   "Floor - not enriched": 7102
+   "Full": 500,
+   "Floor - not enriched": 7959
   },
   "bands": {
-   "Hot - approach first": 19,
-   "Warm - worth a call": 289,
-   "Cool - lower priority": 788,
-   "Cold - little evidence of delivery": 6297
+   "Hot - approach first": 20,
+   "Warm - worth a call": 355,
+   "Cool - lower priority": 881,
+   "Cold - little evidence of delivery": 7203
   }
  }
 }

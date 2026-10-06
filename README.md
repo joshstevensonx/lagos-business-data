@@ -25,26 +25,26 @@ free tier is supported but **off by default** and must stay that way unless Josh
 
 ## Deliverables, 6 Oct 2026 (`deliverables/2026-10-06/`)
 
-Both workbooks passed every `verify` check: formulas recalculated with 0 errors, every DASHBOARD KPI recounted in Python, schema, <5% unclassified, dedupe sanity, and row counts across tabs. Each folder has the verify report, a 10-record spot-check sample for a human to check against the listings, the run manifest, and the full dedupe decision log.
+All three workbooks passed every `verify` check: formulas recalculated with 0 errors, every DASHBOARD KPI recounted in Python, schema, <5% unclassified, dedupe sanity, and row counts across tabs. Each comes with its verify report, a 10-record spot-check sample for a human to check against the listings, the run manifest, and the dedupe decision log.
 
-| | Magazine census, v4 | Delivery prospects, v2 |
-|---|---|---|
-| Workbook | `Anthony_Community_Media_MASTER_DATABASE_v4.xlsx` | `Lagos_Delivery_Prospects_v2.xlsx` |
-| Inside the catchment | **9,592** businesses across 7 areas (v3: 4,946) | **3,559** prospects across 6 areas (v1: 774): 1,914 food, 951 grocery, 694 pharmacy |
-| With a phone | 7,224 (75%) | 2,449 (69%) |
-| Kept as expansion leads (outside catchment) | 24,090 | 3,827 |
-| Classification | 29 groups, 280 of the 436 subcategories used; 3.5% "needs review" | 0.2% "needs review" |
-| Sources | Google Maps (756 searches), Finelib, BusinessList; 464 records cross-verified | Google Maps (≈300 searches), Finelib, BusinessList |
-| Enrichment | 1,500 business websites crawled: emails, WhatsApp, Instagram, Facebook | 544 websites crawled; **291 place pages checked** (Score basis = Full), 115 with an online-ordering link |
+| | Magazine census, v4 | Delivery prospects, v2 | **Combined MASTER DATABASE** |
+|---|---|---|---|
+| Workbook | `Anthony_Community_Media_MASTER_DATABASE_v4.xlsx` | `Lagos_Delivery_Prospects_v2.xlsx` | `Lagos_Combined_MASTER_DATABASE.xlsx` |
+| Inside the catchment | **11,435** across 7 areas (v3: 4,946) | **3,919** across 6 areas (v1: 774): 2,027 food, 1,129 grocery, 763 pharmacy | **18,541** across all 13 areas: 11,596 in the magazine catchment and 6,945 in the delivery areas; 4,222 carry a delivery score |
+| With a phone | 8,888 (78%) | 2,843 (73%) | 14,355 (77%) |
+| Kept as expansion leads (outside catchment) | 29,945 | 4,540 | 30,668 |
+| Classification | 281 of 436 subcategories used; 3.2% "needs review" | 0.2% "needs review" | 2.7% "needs review" |
+| Searches | 2,013 Google Maps (complete, including every zoomed-in split) + 157 directory pages | 504 Google Maps (complete) + 156 directory pages | none of its own: built from the two runs |
+| Enrichment | 1,500 websites crawled; **450 Google Places API** records | websites crawled; **500 place pages** (Score basis = Full); 162 online-ordering links; **300 Google Places API** records | carries both |
 
-**What is not complete, and why:**
-- **The 2-hour budget stopped both Maps runs before every zoomed-in split had run.** All 321 magazine terms and all 12 delivery terms ran at the wide and first-split levels. Some zoom-16/17 quadrant searches on the busiest terms are still pending. `lagosdata resume` runs them, and the SOURCE LOG tab lists every search.
-- **Delivery place pages:** 291 of the 500-visit budget were checked before the time limit. The other prospects show `Floor - not enriched`, meaning their score is a floor, not a verdict.
-- **Google showed no service-option chips (Delivery / Takeout / Catering)** on any Lagos place page checked. Only 19 prospects reach Hot, so the bands lean low. The scores are an honest call order, not a judgement of delivery volume.
-- **OpenStreetMap:** Overpass is unreachable from the build container, so it was skipped (logged).
-- **Directories:** Cybo refuses automated requests (403), VConnect timed out, and NGEX has no area pages; all three were skipped (logged).
-- **Many business websites block automated requests** behind a firewall. That was respected, which is why emails reach 300 rather than thousands.
-- **Six phone numbers are each shared by two distinct Google places** (branches on one hotline). They are kept separate and listed in the verify report.
+**Google Places API:** 753 enterprise calls were used in October 2026, under the 800 ceiling (80% of the free 1,000). The counter is tracked in `.lagosdata/places_usage.json` so it survives container restarts. 57 of delivery's 300 calls went to records later dropped as out of scope (not food, grocery or pharmacy), because candidates were chosen before the scope filter.
+
+**What is still limited, and why:**
+- **OpenStreetMap:** this environment's network policy allows `overpass-api.de` but resets every request to its query endpoint (`/api/interpreter`), so OSM was skipped (logged).
+- **Directories:** Cybo refuses automated requests (403) and VConnect resets connections; both were skipped. NGEX's `/business/` section is news, not a directory.
+- **Many business websites block automated requests** behind a firewall. That was respected, which is why few businesses have emails.
+- **Google showed no service-option chips (Delivery / Takeout / Catering)** on any Lagos place page checked, so delivery bands lean low (19 Hot in the catchment). Use the score as a call order, not a judgement of delivery volume.
+- **Some phones are shared by distinct Google places** (branches on one hotline). They are kept separate and listed in each verify report.
 
 ## Build status (SPEC §10)
 
@@ -75,6 +75,8 @@ lagosdata discover --config config/delivery.yaml --run-id 2026-10-06-delivery
 lagosdata run --config config/delivery.yaml --run-id 2026-10-06-delivery --stages geo
 lagosdata derive-centroids --config config/delivery.yaml --run-id 2026-10-06-delivery --write
 lagosdata run --config config/delivery.yaml --run-id 2026-10-06-delivery --stages geo,classify,dedupe,enrich,score,report,verify
+# one sheet for both: re-assigns areas across all 13, dedupes across runs, verifies
+lagosdata combine --config config/combined.yaml --from 2026-10-06-magazine --from 2026-10-06-delivery --run-id 2026-10-06-combined
 ```
 
 ```bash
