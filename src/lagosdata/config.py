@@ -86,6 +86,14 @@ class GmapsBrowserCfg(Strict):
     max_searches: int = 400
     max_runtime_minutes: int = 240
 
+    @field_validator('delay_seconds')
+    @classmethod
+    def _polite_delay(cls, v):
+        # volume stays modest by construction: the answer to blocking is to run slower
+        if v[0] < 1 or v[1] < v[0]:
+            raise ValueError('delay_seconds must be [min, max] with min >= 1')
+        return v
+
 
 class DirectoriesCfg(Strict):
     enabled: bool = True

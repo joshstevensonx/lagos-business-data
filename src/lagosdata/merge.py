@@ -93,10 +93,20 @@ def dedupe(records: list[Business]) -> tuple[list[Business], list[dict]]:
                               'source': r.source})
             continue
         keys = _keys(r)
-        hit_key = next((k for k in keys if k in by_key), None)
+        hit_key = None
+        for k in keys:
+            h = by_key.get(k)
+            if h is None:
+                continue
+            if k[0] in ('na', 'n') and h.place_id and r.place_id and h.place_id != r.place_id:
+                # Google says these are two different places (typically two branches of one
+                # chain): a name match must not fuse them
+                continue
+            hit_key = k
+            break
         if hit_key is None:
             order.append(r)
-            for k in keys: by_key[k] = r
+            for k in keys: by_key.setdefault(k, r)
         else:
             hit = by_key[hit_key]
             decisions.append({'action': 'merged', 'key': hit_key[0], 'key_value': hit_key[1],

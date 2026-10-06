@@ -30,21 +30,27 @@ free tier is supported but **off by default** and must stay that way unless Josh
 | 1 | Scaffold, pydantic config (unknown keys are errors), SQLite run state, record schema, JSONL log; `tree`, `classify` and `taxonomy` ported verbatim; `score` verbatim plus a record adapter; `normalise` and `merge` from `merge_and_classify.py` | **Done**, tests green |
 | 2 | `sources/osm.py` (`requests` transport, plus `--osm-via-browser`); never fatal | **Done**. Overpass is blocked from the cloud build container, so it is tested against a *synthetic* Overpass-shaped fixture |
 | 3 | Both workbook builders ported, plus `verify` (LibreOffice recalc, Python recount of every DASHBOARD KPI, schema, <5% unclassified, dedupe sanity, cross-tab row counts, spot-check CSV) | **Done**, tests green |
-| 4 | `sources/gmaps_browser.py` | **Not started.** Plan for review: [`docs/PLAN-gmaps-browser.md`](docs/PLAN-gmaps-browser.md) |
-| 5–9 | directories, site_contacts, place_pages, places_api, `derive-centroids`, `--import-csv` | Not started. `--dedupe-report` is done |
+| 4 | `sources/gmaps_browser.py`: render wait, concurrent contexts, backoff, CAPTCHA abort, `--max-searches`/`--max-runtime`, wide-viewport sweeps, `--top-ups` | **Done**. Tested against a recorded live feed (120 cards) and synthetic lazy-load/CAPTCHA pages, and smoke-run live |
+| 9 | `derive-centroids`, `--import-csv`, `--dedupe-report` | **Done** |
+| 5–8 | directories, site_contacts, place_pages, places_api | Not started |
 
 Sources and enrichers that are enabled in config but not built yet are **skipped with a logged notice**, and the workbook README tab says so.
 
 ### Run it
 
 ```bash
-pip install -e ".[dev]"            # add ",browser" for --osm-via-browser
-pytest                              # 62 tests; the verify tests need LibreOffice (soffice)
+pip install -e ".[dev,browser]"    # browser = Playwright, for Google Maps and --osm-via-browser
+pytest                              # the verify tests need LibreOffice; the gmaps tests need Playwright
+# if Playwright's bundled browser build is missing, point it at an installed Chromium:
+export LAGOSDATA_CHROMIUM=/path/to/chromium
+lagosdata run --config config/smoke-2area.yaml        # small live check: 2 areas, 6 terms
 lagosdata run --config config/magazine.yaml            # all stages, verify last; exit 1 if verify fails
 lagosdata run --config config/magazine.yaml --stages report,verify --run-id <id>
 lagosdata resume --run-id <id>
 lagosdata report --run-id <id>
 lagosdata verify --run-id <id>
+lagosdata run --config config/magazine.yaml --import-csv walked.csv   # Josh's hand-collected records
+lagosdata derive-centroids --config config/delivery.yaml --run-id <id> --write
 ```
 
 Output goes to `out/<run-id>/`: `raw/*.jsonl` (untouched, append-only), `stages/*.json`, `master.json`, `state.sqlite`, `run.log`, `manifest.json`, the workbook, `verify_report.json` and `verify_sample.csv`.
@@ -56,3 +62,9 @@ Output goes to `out/<run-id>/`: `raw/*.jsonl` (untouched, append-only), `stages/
 - **The magazine `MASTER DATABASE` gains columns *after* the delivered v3 layout:** WhatsApp, Email, Instagram, Facebook, Contact Channels and All Sources. The original columns don't move.
 - **Delivery `TARGET LIST` gives every score component its own column** (SPEC §1.2). The reference had only three.
 - **Delivery bands are pinned to 60/40/25 in config validation**, so they can't be retuned by a YAML edit (SPEC §6.4: "do not retune without asking").
+
+### Findings from the first live runs (Oct 2026)
+- **The Maps feed stops at 120 results.** Every busy term in the 2-area smoke run returned exactly 120. So a wide zoom-14 sweep silently loses everything past the first 120 (SPEC §3.3(c) assumed it doesn't). The fix is built in: a search that hits the cap is split into 4 quadrant searches one zoom level closer, recursively up to zoom 17. The splits are rebuilt from state, so they survive a resume, and they all count against `max_searches`.
+- **Review counts appear on only some cards.** In the smoke run, 68% of in-catchment businesses had one; cards show "(26)" or "No reviews". Records without a count lose the review-based priority paths (magazine) and the order-volume proxy (delivery) until place-page enrichment fills them.
+- **Name-only dedupe was fusing chain branches.** Two Nett Pharmacy branches, for example, have different Google place IDs. A name match no longer merges two records that both have place IDs and the IDs differ. Phone matches still merge (SPEC §6.3: the strongest signal).
+- **Live 2-area smoke run** (`config/smoke-2area.yaml`, 6 terms, one zoom-15 viewport): 720 cards became 713 unique businesses, 314 of them inside Anthony and Maryland. 0% unclassified, `verify` passed every check.

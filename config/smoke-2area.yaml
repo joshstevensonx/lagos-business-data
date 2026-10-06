@@ -1,0 +1,21 @@
+# Small live end-to-end check (SPEC §10: two-area subset before all seven). ~6 searches.
+pipeline: magazine
+run_id_prefix: smoke
+areas: [Anthony / Anthony Village, Maryland / Mende]
+core_areas: [Anthony / Anthony Village, Maryland / Mende]
+taxonomy:
+  mode: subset
+  terms: [pharmacy, supermarket, hair salon, church, restaurant, auto mechanic]
+sources:
+  osm: { enabled: true }
+  gmaps_browser:
+    enabled: true
+    concurrency: 2
+    sweeps:
+      - { center: [6.5660, 3.3680], zoom: 15 }
+    max_searches: 10
+  directories: { enabled: false }
+  site_contacts: { enabled: false }
+output:
+  dir: out/
+  workbook: smoke_2area.xlsx
