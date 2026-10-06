@@ -9,6 +9,15 @@ ROOT = Path(__file__).resolve().parents[1]
 FIX = Path(__file__).parent / 'fixtures'
 
 
+@pytest.fixture(autouse=True)
+def no_real_places_api(monkeypatch, tmp_path):
+    """Tests never see the real key or touch the real (committed) usage counter."""
+    monkeypatch.delenv('GOOGLE_PLACES_API_KEY', raising=False)
+    from lagosdata.enrichers import places_api
+    monkeypatch.setattr(places_api, 'USAGE_FILE', tmp_path / 'places_usage.json')
+    monkeypatch.setattr(places_api.Budget.__init__, '__defaults__', (tmp_path / 'places_usage.json',))
+
+
 @pytest.fixture
 def overpass_fixture():
     return json.loads((FIX / 'overpass-magazine-synthetic.json').read_text())
@@ -27,6 +36,7 @@ def magazine_run(tmp_path, overpass_fixture):
     run.cfg.sources.directories.enabled = False
     run.cfg.sources.site_contacts.enabled = False
     run.cfg.enrich.place_pages.enabled = False
+    run.cfg.sources.places_api.enabled = False
     yield run
     run.close()
 

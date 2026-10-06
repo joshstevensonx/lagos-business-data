@@ -31,7 +31,9 @@ FIELD_MASKS = {
 for _sku, _mask in FIELD_MASKS.items():
     assert '*' not in _mask, 'a wildcard field mask bills every call at the top SKU'
 ENDPOINT = 'https://places.googleapis.com/v1/places/{pid}'
-USAGE_FILE = Path(os.environ.get('LAGOSDATA_HOME', Path.home() / '.lagosdata')) / 'places_usage.json'
+# Kept in the repo (committed) by default, NOT in ~ - cloud containers and new sessions start with
+# a fresh home directory, and a lost count is how the free tier gets overspent.
+USAGE_FILE = Path(os.environ.get('LAGOSDATA_HOME', '.lagosdata')) / 'places_usage.json'
 
 
 def api_key() -> str:
