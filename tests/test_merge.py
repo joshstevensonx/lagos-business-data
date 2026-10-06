@@ -76,3 +76,14 @@ def test_priority_rules():
     assign_priority(d, core)
     assert d.priority.startswith('D') and d.contactable == 'No'
     assert d.verification == 'Mapped location (OSM)'   # OSM coordinates are not Google verification
+
+
+def test_different_place_ids_are_never_fused_by_name():
+    a = B(name='Nett Pharmacy', place_id='0x1:0xa', addr='350/360 Ikorodu Rd')
+    b = B(name='Nett Pharmacy', place_id='0x1:0xb', addr='Opic Plz, Mobolaji Bank Anthony Way')
+    kept, dec = dedupe([a, b])
+    assert len(kept) == 2 and dec == []
+    # a record without a place id still merges by name into the first branch
+    c = B(name='Nett Pharmacy', source='OpenStreetMap (Oct 2026)', phone='+2348031234567')
+    kept, dec = dedupe([a, b, c])
+    assert len(kept) == 2 and kept[0].phone == '+2348031234567'

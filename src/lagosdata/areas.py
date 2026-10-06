@@ -149,3 +149,33 @@ def bbox_for(names: list[str], registry: dict[str, AreaDef], pad_km: float):
     dlat = pad_km / KM_PER_DEG_LAT
     dlng = pad_km / (KM_PER_DEG_LNG_EQ * math.cos(math.radians((s + n) / 2)))
     return round(s - dlat, 5), round(w - dlng, 5), round(n + dlat, 5), round(e + dlng, 5)
+
+
+def derive_centroids(records, names: list[str], registry: dict[str, AreaDef], min_n: int = 15,
+                     google_only: bool = True) -> dict[str, dict]:
+    """SPEC §4.1: for each area, the MEDIAN lat/lng of records whose address explicitly
+    names it. Median, not mean - robust to the outliers that scattered "Maryland, Ikeja"
+    across Ilupeju, Oshodi and Gbagada. Areas with corridor/polygon geometry are skipped
+    (their shape is drawn, not derived)."""
+    import statistics
+    from .record import source_kind
+    out = {}
+    for name in names:
+        a = registry.get(name)
+        if a and (a.corridor or a.polygon):
+            continue
+        pts = []
+        for r in records:
+            if r.lat in ('', None) or r.lng in ('', None):
+                continue
+            if google_only and not any(source_kind(s) in ('gmaps', 'places_api') for s in (r.sources_all or [r.source])):
+                continue
+            if any(re.search(r'\b' + re.escape(al) + r'\b', r.addr or '', re.I) for al in _aliases(name, a)):
+                pts.append((float(r.lat), float(r.lng)))
+        if not pts:
+            out[name] = {'n': 0}
+            continue
+        out[name] = {'n': len(pts), 'lat': round(statistics.median(p[0] for p in pts), 5),
+                     'lng': round(statistics.median(p[1] for p in pts), 5),
+                     'low_confidence': len(pts) < min_n}
+    return out

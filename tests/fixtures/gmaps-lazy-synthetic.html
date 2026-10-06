@@ -1,0 +1,23 @@
+<!doctype html><html><body>
+<!-- SYNTHETIC: mimics the Maps feed rendering late and loading more cards on scroll.
+     A naive read right after load sees 0 cards; the render wait must see all 40. -->
+<div role="feed" style="height:300px;overflow:auto" id="feed"></div>
+<script>
+let n = 0;
+function add(k) {
+  const feed = document.getElementById('feed');
+  for (let i = 0; i < k && n < 40; i++, n++) {
+    const lat = (6.555 + n * 0.0003).toFixed(6), lng = (3.365 + n * 0.0002).toFixed(6);
+    const d = document.createElement('div');
+    d.setAttribute('jsaction', 'x'); d.style.height = '80px';
+    d.innerHTML = `<a class="hfpxzc" aria-label="Synthetic Pharmacy ${n}"
+      href="https://www.google.com/maps/place/x/data=!4m7!3m6!1s0x10${n}a:0x${n}f!8m2!3d${lat}!4d${lng}!16s"></a>
+      <div><span role="img" aria-label="4.${n % 10} stars"><span aria-hidden="true">4.${n % 10}</span></span></div>
+      <div><span><span>Pharmacy</span></span><span> <span aria-hidden="true">·</span> <span>${n} Synthetic Rd</span></span></div>
+      <div><span><span>Open 24 hours</span></span><span> <span aria-hidden="true">·</span> <span>+234 803 000 ${String(1000 + n)}</span></span></div>`;
+    feed.appendChild(d);
+  }
+}
+setTimeout(() => add(10), 1200);
+document.getElementById('feed').addEventListener('scroll', () => setTimeout(() => add(10), 300));
+</script></body></html>

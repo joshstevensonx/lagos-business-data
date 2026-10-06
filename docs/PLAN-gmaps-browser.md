@@ -1,6 +1,6 @@
 # Plan: `sources/gmaps_browser.py` (SPEC §10 step 4) — for review before building
 
-Steps 1–3 of SPEC §10 are done (see the README's build status). This is the plan for step 4. **Nothing below has been built yet.**
+**Status: built** (Oct 2026) after the network block on Maps was lifted, so the blocker section below is resolved. The defaults taken: consent pages count as a stop signal, and the delivery-area aliases are still unconfirmed.
 
 ## The blocker to decide first
 

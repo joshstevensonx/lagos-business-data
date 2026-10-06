@@ -23,6 +23,10 @@ class SourceUnavailable(Exception):
     Never fatal to a run: discover logs it and moves on."""
 
 
+class SourceAborted(Exception):
+    """Stop this source for the rest of the run (e.g. a CAPTCHA appeared). Never solved, never retried."""
+
+
 class Source(ABC):
     name: str = ''
 
